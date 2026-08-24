@@ -23,28 +23,24 @@ export function Cell({
   conflict,
   onSelect,
 }: CellProps) {
+  const stateClass = [
+    'cell',
+    selected && 'is-selected',
+    !selected && sameDigit && 'is-same',
+    !selected && !sameDigit && related && 'is-related',
+    conflict && 'is-conflict',
+    !conflict && !selected && given && 'is-given',
+    !conflict && !selected && !given && value !== null && 'is-answer',
+  ]
+    .filter(Boolean)
+    .join(' ')
+
   return (
     <button
       type="button"
       onClick={onSelect}
       aria-pressed={selected}
-      className={[
-        'cell relative flex aspect-square w-full items-center justify-center overflow-hidden transition-[background-color,color] duration-150',
-        selected
-          ? 'bg-[var(--cell-selected)] z-[1]'
-          : sameDigit
-            ? 'bg-[var(--cell-same)]'
-            : related
-              ? 'bg-[var(--cell-related)]'
-              : 'bg-[var(--cell-bg)]',
-        conflict
-          ? 'text-[var(--danger)]'
-          : selected
-            ? 'text-white'
-            : given
-              ? 'text-[var(--ink)]'
-              : 'text-[var(--accent)]',
-      ].join(' ')}
+      className={`${stateClass} relative flex aspect-square w-full items-center justify-center overflow-hidden transition-[background-color,color] duration-150`}
     >
       {value !== null ? (
         <span
@@ -62,9 +58,7 @@ export function Cell({
               key={digit}
               className={[
                 'font-ui text-[clamp(0.45rem,1.6vw,0.68rem)] leading-none tabular-nums',
-                notes.has(digit)
-                  ? 'text-[var(--note)] opacity-100'
-                  : 'opacity-0',
+                notes.has(digit) ? 'note-digit opacity-100' : 'opacity-0',
               ].join(' ')}
             >
               {digit}

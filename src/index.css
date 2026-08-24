@@ -73,12 +73,46 @@ body {
 button {
   cursor: pointer;
   border: none;
-  background: none;
   font: inherit;
 }
 
 button:disabled {
   cursor: not-allowed;
+}
+
+.cell {
+  background-color: var(--cell-bg);
+  color: var(--ink);
+}
+
+.cell.is-given {
+  color: var(--ink);
+}
+
+.cell.is-answer {
+  color: var(--accent);
+}
+
+.cell.is-related {
+  background-color: var(--cell-related);
+}
+
+.cell.is-same {
+  background-color: var(--cell-same);
+}
+
+.cell.is-selected {
+  background-color: var(--cell-selected);
+  color: #ffffff;
+  z-index: 1;
+}
+
+.cell.is-conflict {
+  color: var(--danger);
+}
+
+.cell .note-digit {
+  color: var(--note);
 }
 
 @keyframes fade-in {
