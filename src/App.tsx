@@ -18,6 +18,7 @@ import {
   type NotesGrid,
 } from './lib/sudoku'
 import { RefreshCw, CheckCircle2, Lightbulb } from 'lucide-react'
+import { Timer } from './components/Timer'
 
 const MAX_LIVES = 3
 
@@ -62,6 +63,8 @@ export default function App() {
   const [won, setWon] = useState(false)
   const [lives, setLives] = useState(MAX_LIVES)
   const [lost, setLost] = useState(false)
+  const [elapsedSeconds, setElapsedSeconds] = useState(0)
+  const [highlightDigit, setHighlightDigit] = useState<Digit | null>(null)
 
   const conflicts = useMemo(() => {
     const set = getConflicts(game.board)
@@ -76,6 +79,14 @@ export default function App() {
   }, [game.board, game.given, game.solution])
   const gameOver = won || lost
 
+  useEffect(() => {
+    if (gameOver) return
+    const id = window.setInterval(() => {
+      setElapsedSeconds((s) => s + 1)
+    }, 1000)
+    return () => window.clearInterval(id)
+  }, [gameOver])
+
   const startFresh = useCallback((level: Difficulty) => {
     setDifficulty(level)
     setGame(newGame(level))
@@ -83,15 +94,18 @@ export default function App() {
     setWon(false)
     setLost(false)
     setLives(MAX_LIVES)
+    setElapsedSeconds(0)
+    setHighlightDigit(null)
     setMessage('Nauja lenta paruošta. Pradėk nuo užrašų kampe.')
   }, [])
 
   const applyDigit = useCallback(
     (digit: Digit) => {
+      setHighlightDigit(digit)
       if (!selected || gameOver) return
       const { row, col } = selected
       if (game.given[row][col]) {
-        setMessage('Šis skaičius duotas — jo keisti negalima.')
+        setMessage(`Pažymėti visi ${digit} lentoje. Šis langelis duotas.`)
         return
       }
 
@@ -275,7 +289,7 @@ export default function App() {
 
   return (
     <div className="app-root min-h-dvh">
-      <WinCelebration active={won} />
+      <WinCelebration active={won} elapsedSeconds={elapsedSeconds} />
       <LoseOverlay active={lost} />
       <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col px-4 py-6 sm:px-6 sm:py-10">
         <header className="mb-6 sm:mb-8 animate-fade">
@@ -289,8 +303,9 @@ export default function App() {
             Pirmiausia užsirašyk galimus skaičius kampe, o kai būsi tikras — įrašyk
             atsakymą. Klaida suskaldo širdutę.
           </p>
-          <div className="mt-5">
+          <div className="mt-5 flex flex-col items-center gap-4">
             <Hearts lives={lives} maxLives={MAX_LIVES} />
+            <Timer seconds={elapsedSeconds} />
           </div>
         </header>
 
@@ -326,8 +341,13 @@ export default function App() {
             given={game.given}
             notes={game.notes}
             selected={selected}
+            highlightDigit={highlightDigit}
             conflicts={conflicts}
-            onSelect={(row, col) => setSelected({ row, col })}
+            onSelect={(row, col) => {
+              setSelected({ row, col })
+              const value = game.board[row][col]
+              setHighlightDigit(value)
+            }}
           />
 
           <Controls
@@ -342,6 +362,7 @@ export default function App() {
             }}
             onDigit={applyDigit}
             onErase={erase}
+            activeDigit={highlightDigit}
             disabled={gameOver}
           />
 

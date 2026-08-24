@@ -6,6 +6,7 @@ type ControlsProps = {
   onNotesModeChange: (enabled: boolean) => void
   onDigit: (digit: Digit) => void
   onErase: () => void
+  activeDigit?: Digit | null
   disabled?: boolean
 }
 
@@ -16,6 +17,7 @@ export function Controls({
   onNotesModeChange,
   onDigit,
   onErase,
+  activeDigit = null,
   disabled = false,
 }: ControlsProps) {
   return (
@@ -58,17 +60,26 @@ export function Controls({
       </p>
 
       <div className="grid grid-cols-5 gap-2 sm:grid-cols-10">
-        {DIGITS.map((digit) => (
-          <button
-            key={digit}
-            type="button"
-            disabled={disabled}
-            onClick={() => onDigit(digit)}
-            className="digit-btn aspect-square rounded-2xl bg-[var(--surface)] font-display text-xl font-semibold text-[var(--ink)] ring-1 ring-[var(--ring)] transition hover:-translate-y-0.5 hover:bg-white active:translate-y-0 disabled:opacity-40"
-          >
-            {digit}
-          </button>
-        ))}
+        {DIGITS.map((digit) => {
+          const active = activeDigit === digit
+          return (
+            <button
+              key={digit}
+              type="button"
+              disabled={disabled}
+              onClick={() => onDigit(digit)}
+              aria-pressed={active}
+              className={[
+                'digit-btn aspect-square rounded-2xl font-display text-xl font-semibold ring-1 transition hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-40',
+                active
+                  ? 'bg-[var(--ink)] text-[var(--paper)] ring-[var(--ink)]'
+                  : 'bg-[var(--surface)] text-[var(--ink)] ring-[var(--ring)] hover:bg-white',
+              ].join(' ')}
+            >
+              {digit}
+            </button>
+          )
+        })}
         <button
           type="button"
           disabled={disabled}

@@ -1,7 +1,9 @@
 import { useMemo, type CSSProperties } from 'react'
+import { formatTime } from './Timer'
 
 type WinCelebrationProps = {
   active: boolean
+  elapsedSeconds: number
 }
 
 type Particle = {
@@ -26,7 +28,7 @@ const COLORS = [
   '#ffe4f1',
 ]
 
-export function WinCelebration({ active }: WinCelebrationProps) {
+export function WinCelebration({ active, elapsedSeconds }: WinCelebrationProps) {
   const particles = useMemo<Particle[]>(
     () =>
       Array.from({ length: 72 }, (_, id) => ({
@@ -66,7 +68,12 @@ export function WinCelebration({ active }: WinCelebrationProps) {
           />
         ))}
       </div>
-      <p className="win-celebration__text font-display">Sveikinu</p>
+      <div className="win-celebration__copy">
+        <p className="win-celebration__text font-display">Sveikinu</p>
+        <p className="win-celebration__time font-ui">
+          Visas laikas: {formatTime(elapsedSeconds)}
+        </p>
+      </div>
     </div>
   )
 }

@@ -6,6 +6,7 @@ type BoardViewProps = {
   given: boolean[][]
   notes: NotesGrid
   selected: { row: number; col: number } | null
+  highlightDigit: Digit | null
   conflicts: Set<string>
   onSelect: (row: number, col: number) => void
 }
@@ -15,6 +16,7 @@ export function BoardView({
   given,
   notes,
   selected,
+  highlightDigit,
   conflicts,
   onSelect,
 }: BoardViewProps) {
@@ -22,6 +24,8 @@ export function BoardView({
     selected && board[selected.row][selected.col] !== null
       ? board[selected.row][selected.col]
       : null
+
+  const focusDigit = highlightDigit ?? selectedValue
 
   return (
     <div
@@ -50,9 +54,7 @@ export function BoardView({
                       (Math.floor(selected.row / 3) === Math.floor(r / 3) &&
                         Math.floor(selected.col / 3) === Math.floor(c / 3)))
                   const sameDigit =
-                    selectedValue !== null &&
-                    value === selectedValue &&
-                    !isSelected
+                    focusDigit !== null && value === focusDigit && !isSelected
 
                   return (
                     <Cell
