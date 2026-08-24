@@ -55,7 +55,7 @@ function BrokenHeart() {
 export function Hearts({ lives, maxLives = 3 }: HeartsProps) {
   return (
     <div
-      className="hearts flex w-full items-center justify-center gap-5"
+      className="hearts flex shrink-0 items-center justify-end gap-3 sm:gap-5"
       aria-label={`Gyvybės: ${lives} iš ${maxLives}`}
       role="status"
     >

@@ -59,7 +59,6 @@ export default function App() {
     col: 0,
   })
   const [notesMode, setNotesMode] = useState(true)
-  const [message, setMessage] = useState<string | null>(null)
   const [won, setWon] = useState(false)
   const [lives, setLives] = useState(MAX_LIVES)
   const [lost, setLost] = useState(false)
@@ -96,7 +95,6 @@ export default function App() {
     setLives(MAX_LIVES)
     setElapsedSeconds(0)
     setHighlightDigit(null)
-    setMessage('Nauja lenta paruošta. Pradėk nuo užrašų kampe.')
   }, [])
 
   const applyDigit = useCallback(
@@ -105,7 +103,6 @@ export default function App() {
       if (!selected || gameOver) return
       const { row, col } = selected
       if (game.given[row][col]) {
-        setMessage(`Pažymėti visi ${digit} lentoje. Šis langelis duotas.`)
         return
       }
 
@@ -118,7 +115,6 @@ export default function App() {
           else notes[row][col].add(digit)
           return { ...prev, board, notes }
         })
-        setMessage(`Užrašas ${digit} kampe.`)
         return
       }
 
@@ -138,11 +134,6 @@ export default function App() {
           const next = Math.max(0, prevLives - 1)
           if (next === 0) {
             setLost(true)
-            setMessage('Nebėra širdučių — žaidimas baigtas. Spausk „Naujas“.')
-          } else {
-            setMessage(
-              `Neteisingas atsakymas. Liko ${next} ${next === 1 ? 'širdutė' : 'širdutės'}.`,
-            )
           }
           return next
         })
@@ -150,7 +141,6 @@ export default function App() {
       }
 
       if (alreadyCorrect && game.board[row][col] === digit) {
-        setMessage('Šis langelis jau teisingas.')
         return
       }
 
@@ -174,7 +164,6 @@ export default function App() {
 
         return { ...prev, board, notes }
       })
-      setMessage(`Atsakymas ${digit} įrašytas.`)
     },
     [game.board, game.given, game.solution, gameOver, notesMode, selected],
   )
@@ -183,7 +172,6 @@ export default function App() {
     if (!selected || gameOver) return
     const { row, col } = selected
     if (game.given[row][col]) {
-      setMessage('Šis skaičius duotas — jo trinti negalima.')
       return
     }
 
@@ -194,14 +182,12 @@ export default function App() {
       notes[row][col] = new Set()
       return { ...prev, board, notes }
     })
-    setMessage('Langelis išvalytas.')
   }, [game.given, gameOver, selected])
 
   useEffect(() => {
     if (lost || lives === 0) return
     if (isComplete(game.board) && boardsEqual(game.board, game.solution)) {
       setWon(true)
-      setMessage('Puiku — Sudoku išspręstas!')
     }
   }, [game.board, game.solution, lives, lost])
 
@@ -242,37 +228,12 @@ export default function App() {
     return () => window.removeEventListener('keydown', onKey)
   }, [applyDigit, erase, selected])
 
-  const checkProgress = () => {
-    if (lost) {
-      setMessage('Žaidimas baigtas — pradėk naują.')
-      return
-    }
-    let wrong = 0
-    let filled = 0
-    for (let r = 0; r < 9; r += 1) {
-      for (let c = 0; c < 9; c += 1) {
-        const value = game.board[r][c]
-        if (value === null || game.given[r][c]) continue
-        filled += 1
-        if (value !== game.solution[r][c]) wrong += 1
-      }
-    }
-    if (filled === 0) {
-      setMessage('Dar nėra atsakymų — pirmiausia užsirašyk arba įrašyk skaičių.')
-      return
-    }
-    if (wrong === 0) {
-      setMessage(`Visi ${filled} tavo atsakymai teisingi. Tęsk!`)
-    } else {
-      setMessage(`Rasta ${wrong} klaidingų atsakymų iš ${filled}.`)
-    }
-  }
+  const checkProgress = () => {}
 
   const revealHint = () => {
     if (!selected || gameOver) return
     const { row, col } = selected
     if (game.given[row][col] || game.board[row][col] === game.solution[row][col]) {
-      setMessage('Pasirink tuščią ar klaidingą langelį užuominai.')
       return
     }
     const digit = game.solution[row][col]
@@ -284,7 +245,6 @@ export default function App() {
       notes[row][col] = new Set()
       return { ...prev, board, notes }
     })
-    setMessage(`Užuomina: čia turi būti ${digit}.`)
   }
 
   const clearSelection = () => {
@@ -298,19 +258,12 @@ export default function App() {
       <LoseOverlay active={lost} />
       <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col px-4 py-6 sm:px-6 sm:py-10">
         <header className="mb-6 sm:mb-8 animate-fade">
-          <p className="font-ui text-xs font-semibold uppercase tracking-[0.22em] text-[var(--accent)]">
-            Mokymuisi
-          </p>
-          <h1 className="font-display mt-2 text-[clamp(2.4rem,8vw,3.6rem)] font-bold leading-[0.95] tracking-tight text-[var(--ink)]">
+          <h1 className="font-display text-[clamp(2.4rem,8vw,3.6rem)] font-bold leading-[0.95] tracking-tight text-[var(--ink)]">
             Sudoku
           </h1>
-          <p className="mt-3 max-w-xl font-ui text-base text-[var(--muted)] sm:text-lg">
-            Pirmiausia užsirašyk galimus skaičius kampe, o kai būsi tikras — įrašyk
-            atsakymą. Klaida suskaldo širdutę.
-          </p>
-          <div className="mt-5 flex flex-col items-center gap-4">
-            <Hearts lives={lives} maxLives={MAX_LIVES} />
+          <div className="mt-5 flex w-full items-center justify-between gap-4">
             <Timer seconds={elapsedSeconds} />
+            <Hearts lives={lives} maxLives={MAX_LIVES} />
           </div>
         </header>
 
@@ -361,14 +314,7 @@ export default function App() {
           >
             <Controls
               notesMode={notesMode}
-              onNotesModeChange={(enabled) => {
-                setNotesMode(enabled)
-                setMessage(
-                  enabled
-                    ? 'Persijungei į užrašų režimą.'
-                    : 'Persijungei į atsakymo režimą.',
-                )
-              }}
+              onNotesModeChange={setNotesMode}
               onDigit={applyDigit}
               onErase={erase}
               activeDigit={highlightDigit}
@@ -393,21 +339,6 @@ export default function App() {
                 Užuomina
               </button>
             </div>
-          </div>
-
-          <div
-            className={[
-              'min-h-12 w-full max-w-[min(92vw,34rem)] rounded-2xl px-4 py-3 font-ui text-sm transition',
-              won
-                ? 'bg-[var(--success-bg)] text-[var(--success)]'
-                : lost
-                  ? 'bg-[#fde8e8] text-[var(--danger)]'
-                  : 'bg-[var(--surface)] text-[var(--muted)] ring-1 ring-[var(--ring)]',
-            ].join(' ')}
-            role="status"
-          >
-            {message ??
-              'Pasirink langelį. Įjunk „Užrašai“, kad skaičius atsirastų kampe.'}
           </div>
         </main>
       </div>

@@ -53,12 +53,6 @@ export function Controls({
         </button>
       </div>
 
-      <p className="px-1 font-ui text-sm text-[var(--muted)]">
-        {notesMode
-          ? 'Užrašų režimas: skaičius atsiranda kampe. Spausk dar kartą — pašalinsi.'
-          : 'Atsakymo režimas: skaičius įrašomas didelis, kaip galutinis atsakymas.'}
-      </p>
-
       <div className="grid grid-cols-5 gap-2 sm:grid-cols-10">
         {DIGITS.map((digit) => {
           const active = activeDigit === digit
