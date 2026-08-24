@@ -85,6 +85,22 @@ button:disabled {
   color: var(--ink);
 }
 
+.cell-corner-tl {
+  border-top-left-radius: 0.85rem;
+}
+
+.cell-corner-tr {
+  border-top-right-radius: 0.85rem;
+}
+
+.cell-corner-bl {
+  border-bottom-left-radius: 0.85rem;
+}
+
+.cell-corner-br {
+  border-bottom-right-radius: 0.85rem;
+}
+
 .cell.is-given {
   color: var(--ink);
 }

@@ -1,5 +1,7 @@
 import type { Digit, Notes } from '../lib/sudoku'
 
+type Corner = 'tl' | 'tr' | 'bl' | 'br' | null
+
 type CellProps = {
   value: Digit | null
   notes: Notes
@@ -8,10 +10,18 @@ type CellProps = {
   related: boolean
   sameDigit: boolean
   conflict: boolean
+  corner?: Corner
   onSelect: () => void
 }
 
 const NOTE_ORDER: Digit[] = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+const CORNER_CLASS: Record<Exclude<Corner, null>, string> = {
+  tl: 'cell-corner-tl',
+  tr: 'cell-corner-tr',
+  bl: 'cell-corner-bl',
+  br: 'cell-corner-br',
+}
 
 export function Cell({
   value,
@@ -21,6 +31,7 @@ export function Cell({
   related,
   sameDigit,
   conflict,
+  corner = null,
   onSelect,
 }: CellProps) {
   const stateClass = [
@@ -31,6 +42,7 @@ export function Cell({
     conflict && 'is-conflict',
     !conflict && !selected && given && 'is-given',
     !conflict && !selected && !given && value !== null && 'is-answer',
+    corner && CORNER_CLASS[corner],
   ]
     .filter(Boolean)
     .join(' ')

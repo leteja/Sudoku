@@ -56,6 +56,17 @@ export function BoardView({
                   const sameDigit =
                     focusDigit !== null && value === focusDigit && !isSelected
 
+                  const corner =
+                    r === 0 && c === 0
+                      ? 'tl'
+                      : r === 0 && c === 8
+                        ? 'tr'
+                        : r === 8 && c === 0
+                          ? 'bl'
+                          : r === 8 && c === 8
+                            ? 'br'
+                            : null
+
                   return (
                     <Cell
                       key={key}
@@ -66,6 +77,7 @@ export function BoardView({
                       related={related && !isSelected && !sameDigit}
                       sameDigit={sameDigit}
                       conflict={conflicts.has(key)}
+                      corner={corner}
                       onSelect={() => onSelect(r, c)}
                     />
                   )
