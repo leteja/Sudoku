@@ -29,7 +29,7 @@ export function Cell({
       onClick={onSelect}
       aria-pressed={selected}
       className={[
-        'cell relative flex aspect-square w-full items-center justify-center overflow-hidden transition-[background-color,color,transform] duration-150',
+        'cell relative flex aspect-square w-full items-center justify-center overflow-hidden transition-[background-color,color] duration-150',
         selected
           ? 'bg-[var(--cell-selected)] z-[1]'
           : sameDigit
@@ -37,8 +37,13 @@ export function Cell({
             : related
               ? 'bg-[var(--cell-related)]'
               : 'bg-[var(--cell-bg)]',
-        conflict ? 'text-[var(--danger)]' : given ? 'text-[var(--ink)]' : 'text-[var(--accent)]',
-        selected ? 'scale-[1.02]' : '',
+        conflict
+          ? 'text-[var(--danger)]'
+          : selected
+            ? 'text-white'
+            : given
+              ? 'text-[var(--ink)]'
+              : 'text-[var(--accent)]',
       ].join(' ')}
     >
       {value !== null ? (

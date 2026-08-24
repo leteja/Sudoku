@@ -1,19 +1,19 @@
 @import 'tailwindcss';
 
 :root {
-  --ink: #0f3d3e;
-  --paper: #f3f7f5;
-  --surface: rgba(255, 255, 255, 0.72);
-  --muted: #5a7370;
+  --ink: #2a2e33;
+  --paper: #e4e6e9;
+  --surface: rgba(255, 255, 255, 0.78);
+  --muted: #6b727a;
   --accent: #187a75;
-  --note: #3d6b68;
-  --ring: rgba(15, 61, 62, 0.12);
+  --note: #4a5560;
+  --ring: rgba(42, 46, 51, 0.12);
   --grid-line: #ffffff;
   --grid-line-thick: #ffffff;
-  --cell-bg: #d7e8e4;
-  --cell-selected: #9fd4cc;
-  --cell-related: #c5ddd8;
-  --cell-same: #b6d9d1;
+  --cell-bg: #d8dbdf;
+  --cell-selected: #8b949e;
+  --cell-related: #cfd3d8;
+  --cell-same: #c4cad1;
   --danger: #b42318;
   --success: #0f6b45;
   --success-bg: #d9f5e7;
@@ -50,9 +50,9 @@ body {
 
 .app-root {
   background:
-    radial-gradient(ellipse 80% 50% at 10% -10%, rgba(24, 122, 117, 0.18), transparent 55%),
-    radial-gradient(ellipse 70% 45% at 100% 0%, rgba(15, 61, 62, 0.12), transparent 50%),
-    linear-gradient(165deg, #eef6f3 0%, #f3f7f5 40%, #e7f0ed 100%);
+    radial-gradient(ellipse 70% 45% at 8% -5%, rgba(255, 255, 255, 0.55), transparent 50%),
+    radial-gradient(ellipse 60% 40% at 100% 0%, rgba(120, 128, 140, 0.12), transparent 55%),
+    linear-gradient(165deg, #eceef1 0%, #e4e6e9 45%, #dde0e4 100%);
   position: relative;
   overflow-x: hidden;
 }
@@ -63,8 +63,8 @@ body {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(15, 61, 62, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(15, 61, 62, 0.035) 1px, transparent 1px);
+    linear-gradient(rgba(42, 46, 51, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(42, 46, 51, 0.03) 1px, transparent 1px);
   background-size: 48px 48px;
   mask-image: radial-gradient(circle at 50% 20%, black 20%, transparent 75%);
   opacity: 0.7;
