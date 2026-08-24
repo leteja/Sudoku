@@ -1,0 +1,132 @@
+@import 'tailwindcss';
+
+:root {
+  --ink: #0f3d3e;
+  --paper: #f3f7f5;
+  --surface: rgba(255, 255, 255, 0.72);
+  --muted: #5a7370;
+  --accent: #187a75;
+  --note: #3d6b68;
+  --ring: rgba(15, 61, 62, 0.12);
+  --grid-line: #c5d8d4;
+  --cell-bg: #fbfefd;
+  --cell-selected: #cfece7;
+  --cell-related: #e8f4f1;
+  --cell-same: #d9efe9;
+  --danger: #b42318;
+  --success: #0f6b45;
+  --success-bg: #d9f5e7;
+  color: var(--ink);
+  font-family: 'Sora', sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: var(--paper);
+}
+
+.font-display {
+  font-family: 'Fraunces', Georgia, serif;
+}
+
+.font-ui {
+  font-family: 'Sora', sans-serif;
+}
+
+.app-root {
+  background:
+    radial-gradient(ellipse 80% 50% at 10% -10%, rgba(24, 122, 117, 0.18), transparent 55%),
+    radial-gradient(ellipse 70% 45% at 100% 0%, rgba(15, 61, 62, 0.12), transparent 50%),
+    linear-gradient(165deg, #eef6f3 0%, #f3f7f5 40%, #e7f0ed 100%);
+  position: relative;
+  overflow-x: hidden;
+}
+
+.app-root::before {
+  content: '';
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(15, 61, 62, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 61, 62, 0.035) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(circle at 50% 20%, black 20%, transparent 75%);
+  opacity: 0.7;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font: inherit;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-fade {
+  animation: fade-in 0.55s ease-out both;
+}
+
+.animate-rise {
+  animation: rise-in 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-rise-delay {
+  animation: rise-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+}
+
+.animate-rise-delay-2 {
+  animation: rise-in 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.14s both;
+}
+
+.digit-btn:active {
+  transform: translateY(0) scale(0.97);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade,
+  .animate-rise,
+  .animate-rise-delay,
+  .animate-rise-delay-2 {
+    animation: none;
+  }
+}
