@@ -17,7 +17,7 @@ import {
   type Digit,
   type NotesGrid,
 } from './lib/sudoku'
-import { RefreshCw, CheckCircle2, Lightbulb } from 'lucide-react'
+import { RefreshCw, CheckCircle2, Lightbulb, Pause, Play } from 'lucide-react'
 import { Timer } from './components/Timer'
 
 const MAX_LIVES = 3
@@ -63,6 +63,7 @@ export default function App() {
   const [lives, setLives] = useState(MAX_LIVES)
   const [lost, setLost] = useState(false)
   const [elapsedSeconds, setElapsedSeconds] = useState(0)
+  const [paused, setPaused] = useState(false)
   const [highlightDigit, setHighlightDigit] = useState<Digit | null>(null)
 
   const conflicts = useMemo(() => {
@@ -77,14 +78,15 @@ export default function App() {
     return set
   }, [game.board, game.given, game.solution])
   const gameOver = won || lost
+  const inputLocked = gameOver || paused
 
   useEffect(() => {
-    if (gameOver) return
+    if (gameOver || paused) return
     const id = window.setInterval(() => {
       setElapsedSeconds((s) => s + 1)
     }, 1000)
     return () => window.clearInterval(id)
-  }, [gameOver])
+  }, [gameOver, paused])
 
   const startFresh = useCallback((level: Difficulty) => {
     setDifficulty(level)
@@ -94,13 +96,14 @@ export default function App() {
     setLost(false)
     setLives(MAX_LIVES)
     setElapsedSeconds(0)
+    setPaused(false)
     setHighlightDigit(null)
   }, [])
 
   const applyDigit = useCallback(
     (digit: Digit) => {
       setHighlightDigit(digit)
-      if (!selected || gameOver) return
+      if (!selected || gameOver || paused) return
       const { row, col } = selected
       if (game.given[row][col]) {
         return
@@ -165,11 +168,11 @@ export default function App() {
         return { ...prev, board, notes }
       })
     },
-    [game.board, game.given, game.solution, gameOver, notesMode, selected],
+    [game.board, game.given, game.solution, gameOver, notesMode, paused, selected],
   )
 
   const erase = useCallback(() => {
-    if (!selected || gameOver) return
+    if (!selected || gameOver || paused) return
     const { row, col } = selected
     if (game.given[row][col]) {
       return
@@ -182,7 +185,7 @@ export default function App() {
       notes[row][col] = new Set()
       return { ...prev, board, notes }
     })
-  }, [game.given, gameOver, selected])
+  }, [game.given, gameOver, paused, selected])
 
   useEffect(() => {
     if (lost || lives === 0) return
@@ -193,6 +196,7 @@ export default function App() {
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
+      if (paused || gameOver) return
       if (!selected) return
       if (event.key >= '1' && event.key <= '9') {
         applyDigit(Number(event.key) as Digit)
@@ -226,12 +230,14 @@ export default function App() {
 
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [applyDigit, erase, selected])
+  }, [applyDigit, erase, gameOver, paused, selected])
 
-  const checkProgress = () => {}
+  const checkProgress = () => {
+    if (lost || paused) return
+  }
 
   const revealHint = () => {
-    if (!selected || gameOver) return
+    if (!selected || gameOver || paused) return
     const { row, col } = selected
     if (game.given[row][col] || game.board[row][col] === game.solution[row][col]) {
       return
@@ -248,8 +254,14 @@ export default function App() {
   }
 
   const clearSelection = () => {
+    if (paused) return
     setSelected(null)
     setHighlightDigit(null)
+  }
+
+  const togglePause = () => {
+    if (gameOver) return
+    setPaused((value) => !value)
   }
 
   return (
@@ -283,63 +295,115 @@ export default function App() {
               {DIFFICULTY_LABEL[level]}
             </button>
           ))}
-          <button
-            type="button"
-            onClick={() => startFresh(difficulty)}
-            className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-[var(--surface)] px-3.5 py-1.5 font-ui text-sm font-medium text-[var(--ink)] ring-1 ring-[var(--ring)] transition hover:bg-white"
-          >
-            <RefreshCw size={14} />
-            Naujas
-          </button>
+          <div className="ml-auto flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation()
+                togglePause()
+              }}
+              disabled={gameOver}
+              aria-pressed={paused}
+              className={[
+                'inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 font-ui text-sm font-medium ring-1 transition',
+                paused
+                  ? 'bg-[var(--accent)] text-white ring-[var(--accent)] hover:brightness-110'
+                  : 'bg-[var(--surface)] text-[var(--ink)] ring-[var(--ring)] hover:bg-white',
+                'disabled:cursor-not-allowed disabled:opacity-40',
+              ].join(' ')}
+            >
+              {paused ? <Play size={14} /> : <Pause size={14} />}
+              {paused ? 'Tęsti' : 'Pauzė'}
+            </button>
+            <button
+              type="button"
+              onClick={() => startFresh(difficulty)}
+              className="inline-flex items-center gap-1.5 rounded-full bg-[var(--surface)] px-3.5 py-1.5 font-ui text-sm font-medium text-[var(--ink)] ring-1 ring-[var(--ring)] transition hover:bg-white"
+            >
+              <RefreshCw size={14} />
+              Naujas
+            </button>
+          </div>
         </div>
 
-        <main className="flex flex-1 flex-col items-center gap-5">
-          <BoardView
-            board={game.board}
-            given={game.given}
-            notes={game.notes}
-            selected={selected}
-            highlightDigit={highlightDigit}
-            conflicts={conflicts}
-            onSelect={(row, col) => {
-              setSelected({ row, col })
-              const value = game.board[row][col]
-              setHighlightDigit(value)
-            }}
-          />
-
+        <main className="relative flex flex-1 flex-col items-center gap-5">
           <div
-            className="flex w-full max-w-[min(92vw,34rem)] flex-col gap-3"
-            onClick={(event) => event.stopPropagation()}
+            className={[
+              'flex w-full flex-col items-center gap-5 transition-[filter,opacity] duration-300',
+              paused ? 'pointer-events-none select-none opacity-55 blur-[18px] sm:blur-[24px]' : '',
+            ].join(' ')}
+            aria-hidden={paused}
           >
-            <Controls
-              notesMode={notesMode}
-              onNotesModeChange={setNotesMode}
-              onDigit={applyDigit}
-              onErase={erase}
-              activeDigit={highlightDigit}
-              disabled={gameOver}
+            <BoardView
+              board={game.board}
+              given={game.given}
+              notes={game.notes}
+              selected={selected}
+              highlightDigit={highlightDigit}
+              conflicts={conflicts}
+              onSelect={(row, col) => {
+                if (paused) return
+                setSelected({ row, col })
+                const value = game.board[row][col]
+                setHighlightDigit(value)
+              }}
             />
 
-            <div className="flex w-full flex-wrap gap-2 animate-rise-delay-2">
-              <button
-                type="button"
-                onClick={checkProgress}
-                className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-[var(--surface)] px-4 py-3 font-ui text-sm font-semibold text-[var(--ink)] ring-1 ring-[var(--ring)] transition hover:bg-white"
-              >
-                <CheckCircle2 size={16} />
-                Tikrinti atsakymus
-              </button>
-              <button
-                type="button"
-                onClick={revealHint}
-                className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-[var(--surface)] px-4 py-3 font-ui text-sm font-semibold text-[var(--ink)] ring-1 ring-[var(--ring)] transition hover:bg-white"
-              >
-                <Lightbulb size={16} />
-                Užuomina
-              </button>
+            <div
+              className="flex w-full max-w-[min(92vw,34rem)] flex-col gap-3"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <Controls
+                notesMode={notesMode}
+                onNotesModeChange={setNotesMode}
+                onDigit={applyDigit}
+                onErase={erase}
+                activeDigit={highlightDigit}
+                disabled={inputLocked}
+              />
+
+              <div className="flex w-full flex-wrap gap-2 animate-rise-delay-2">
+                <button
+                  type="button"
+                  onClick={checkProgress}
+                  disabled={inputLocked}
+                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-[var(--surface)] px-4 py-3 font-ui text-sm font-semibold text-[var(--ink)] ring-1 ring-[var(--ring)] transition hover:bg-white disabled:opacity-40"
+                >
+                  <CheckCircle2 size={16} />
+                  Tikrinti atsakymus
+                </button>
+                <button
+                  type="button"
+                  onClick={revealHint}
+                  disabled={inputLocked}
+                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-[var(--surface)] px-4 py-3 font-ui text-sm font-semibold text-[var(--ink)] ring-1 ring-[var(--ring)] transition hover:bg-white disabled:opacity-40"
+                >
+                  <Lightbulb size={16} />
+                  Užuomina
+                </button>
+              </div>
             </div>
           </div>
+
+          {paused ? (
+            <div
+              className="pause-overlay"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Pauzė"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <p className="pause-overlay__title font-display">Pauzė</p>
+              <button
+                type="button"
+                onClick={togglePause}
+                className="inline-flex items-center gap-2 rounded-full bg-[var(--ink)] px-5 py-2.5 font-ui text-sm font-semibold text-[var(--paper)] transition hover:brightness-110"
+              >
+                <Play size={16} />
+                Tęsti
+              </button>
+            </div>
+          ) : null}
         </main>
       </div>
     </div>
