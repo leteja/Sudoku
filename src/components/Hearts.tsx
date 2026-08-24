@@ -1,41 +1,69 @@
-import { Heart, HeartCrack } from 'lucide-react'
-
 type HeartsProps = {
   lives: number
   maxLives?: number
 }
 
+function AliveHeart() {
+  return (
+    <svg
+      width="52"
+      height="52"
+      viewBox="0 0 24 24"
+      aria-hidden
+      className="drop-shadow-[0_4px_12px_rgba(225,29,72,0.4)]"
+    >
+      <path
+        d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+        fill="#e11d48"
+        stroke="#be123c"
+        strokeWidth="1.2"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+function BrokenHeart() {
+  return (
+    <svg
+      width="52"
+      height="52"
+      viewBox="0 0 24 24"
+      aria-hidden
+      className="broken-heart"
+    >
+      <path
+        d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+        fill="#141414"
+        stroke="#000"
+        strokeWidth="1.1"
+        strokeLinejoin="round"
+      />
+      {/* White lightning crack through the heart */}
+      <path
+        d="M12.15 5.2 10.2 10.4h2.55L10.05 18.3 14.1 11.05h-2.7L13.9 5.2Z"
+        fill="#ffffff"
+        stroke="#ffffff"
+        strokeWidth="0.35"
+        strokeLinejoin="round"
+        className="heart-lightning"
+      />
+    </svg>
+  )
+}
+
 export function Hearts({ lives, maxLives = 3 }: HeartsProps) {
   return (
     <div
-      className="hearts flex w-full items-center justify-center gap-4"
+      className="hearts flex w-full items-center justify-center gap-5"
       aria-label={`Gyvybės: ${lives} iš ${maxLives}`}
       role="status"
     >
-      {Array.from({ length: maxLives }, (_, index) => {
-        const alive = index < lives
-        if (alive) {
-          return (
-            <Heart
-              key={index}
-              size={44}
-              strokeWidth={2}
-              className="fill-[#e11d48] text-[#e11d48] drop-shadow-[0_4px_10px_rgba(225,29,72,0.35)] transition-all duration-300"
-              aria-hidden
-            />
-          )
-        }
-
-        return (
-          <HeartCrack
-            key={index}
-            size={44}
-            strokeWidth={2.1}
-            className="fill-[#1a1a1a] text-[#1a1a1a] opacity-90 transition-all duration-300"
-            aria-hidden
-          />
-        )
-      })}
+      {Array.from({ length: maxLives }, (_, index) => (
+        <div key={index} className="transition-transform duration-300">
+          {index < lives ? <AliveHeart /> : <BrokenHeart />}
+        </div>
+      ))}
     </div>
   )
 }

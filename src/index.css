@@ -115,6 +115,79 @@ button:disabled {
   color: var(--note);
 }
 
+.heart-lightning {
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.95));
+}
+
+.win-celebration {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.win-celebration__glitter {
+  position: absolute;
+  inset: 0;
+}
+
+.glitter-piece {
+  position: absolute;
+  top: -12px;
+  border-radius: 999px;
+  opacity: 0;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.65);
+  animation-name: glitter-fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.win-celebration__text {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  font-size: clamp(3rem, 12vw, 6.5rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #ff4d8d;
+  text-shadow:
+    0 0 18px rgba(255, 77, 141, 0.55),
+    0 8px 30px rgba(255, 105, 180, 0.35);
+  animation: sveikinu-pop 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes glitter-fall {
+  0% {
+    transform: translate3d(0, -10vh, 0) rotate(0deg);
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(var(--drift), 110vh, 0) rotate(var(--spin));
+    opacity: 0.15;
+  }
+}
+
+@keyframes sveikinu-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.7) translateY(18px);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.06) translateY(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -163,5 +236,18 @@ button:disabled {
   .animate-rise-delay,
   .animate-rise-delay-2 {
     animation: none;
+  }
+
+  .glitter-piece,
+  .win-celebration__text {
+    animation: none !important;
+  }
+
+  .win-celebration__text {
+    opacity: 1;
+  }
+
+  .glitter-piece {
+    display: none;
   }
 }

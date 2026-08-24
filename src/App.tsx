@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { BoardView } from './components/BoardView'
 import { Controls } from './components/Controls'
 import { Hearts } from './components/Hearts'
+import { WinCelebration } from './components/WinCelebration'
 import {
   boardsEqual,
   cloneBoard,
@@ -273,6 +274,7 @@ export default function App() {
 
   return (
     <div className="app-root min-h-dvh">
+      <WinCelebration active={won} />
       <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col px-4 py-6 sm:px-6 sm:py-10">
         <header className="mb-6 sm:mb-8 animate-fade">
           <p className="font-ui text-xs font-semibold uppercase tracking-[0.22em] text-[var(--accent)]">
