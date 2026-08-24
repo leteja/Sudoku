@@ -10,10 +10,10 @@
   --ring: rgba(15, 61, 62, 0.12);
   --grid-line: #ffffff;
   --grid-line-thick: #ffffff;
-  --cell-bg: #fbfefd;
-  --cell-selected: #cfece7;
-  --cell-related: #e8f4f1;
-  --cell-same: #d9efe9;
+  --cell-bg: #d7e8e4;
+  --cell-selected: #9fd4cc;
+  --cell-related: #c5ddd8;
+  --cell-same: #b6d9d1;
   --danger: #b42318;
   --success: #0f6b45;
   --success-bg: #d9f5e7;
