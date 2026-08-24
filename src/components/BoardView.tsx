@@ -29,7 +29,7 @@ export function BoardView({
 
   return (
     <div
-      className="board-shell mx-auto w-full max-w-[min(92vw,34rem)] animate-rise"
+      className="board-shell mx-auto animate-rise"
       role="grid"
       aria-label="Sudoku lenta"
       onClick={(event) => event.stopPropagation()}

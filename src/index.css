@@ -32,12 +32,22 @@ html,
 body,
 #root {
   min-height: 100%;
+  min-height: 100dvh;
 }
 
 body {
   margin: 0;
   min-width: 320px;
   background: var(--paper);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Avoid iOS auto-zoom on form controls (16px+). */
+input,
+select,
+textarea {
+  font-size: 16px;
 }
 
 .font-display {
@@ -55,6 +65,26 @@ body {
     linear-gradient(165deg, #eceef1 0%, #e4e6e9 45%, #dde0e4 100%);
   position: relative;
   overflow-x: hidden;
+  padding-top: env(safe-area-inset-top);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+}
+
+.app-shell {
+  width: 100%;
+  max-width: 64rem;
+  margin-inline: auto;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: 0.85rem 0.85rem 1.1rem;
+}
+
+@media (min-width: 640px) {
+  .app-shell {
+    padding: 2.5rem 1.5rem;
+  }
 }
 
 .app-root::before {
@@ -74,10 +104,56 @@ button {
   cursor: pointer;
   border: none;
   font: inherit;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 button:disabled {
   cursor: not-allowed;
+}
+
+.touch-target {
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+}
+
+.share-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(1rem + env(safe-area-inset-bottom));
+  z-index: 60;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: 'Sora', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.65rem 1.1rem;
+  box-shadow: 0 12px 28px -14px rgba(42, 46, 51, 0.55);
+  animation: fade-in 0.25s ease both;
+  pointer-events: none;
+  max-width: calc(100vw - 2rem);
+  text-align: center;
+}
+
+.hearts svg {
+  width: 2.35rem;
+  height: 2.35rem;
+}
+
+@media (min-width: 640px) {
+  .hearts svg {
+    width: 3.25rem;
+    height: 3.25rem;
+  }
+}
+
+.board-shell,
+.controls-panel {
+  width: 100%;
+  max-width: min(100%, 34rem);
 }
 
 .cell {

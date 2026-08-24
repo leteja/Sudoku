@@ -52,7 +52,7 @@ export function Cell({
       type="button"
       onClick={onSelect}
       aria-pressed={selected}
-      className={`${stateClass} relative flex aspect-square w-full items-center justify-center overflow-hidden transition-[background-color,color] duration-150`}
+      className={`${stateClass} relative flex aspect-square w-full touch-manipulation items-center justify-center overflow-hidden transition-[background-color,color] duration-150`}
     >
       {value !== null ? (
         <span

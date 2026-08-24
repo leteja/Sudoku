@@ -18,7 +18,7 @@ export function formatTime(totalSeconds: number): string {
 export function Timer({ seconds }: TimerProps) {
   return (
     <div
-      className="timer inline-flex items-center justify-center rounded-full bg-[var(--surface)] px-4 py-2 font-ui text-sm font-semibold tabular-nums text-[var(--ink)] ring-1 ring-[var(--ring)]"
+      className="timer inline-flex min-h-11 items-center justify-center rounded-full bg-[var(--surface)] px-3.5 py-2 font-ui text-sm font-semibold tabular-nums text-[var(--ink)] ring-1 ring-[var(--ring)] sm:px-4"
       aria-label={`Laikas ${formatTime(seconds)}`}
     >
       Laikas: {formatTime(seconds)}

@@ -17,8 +17,11 @@ import {
   type Digit,
   type NotesGrid,
 } from './lib/sudoku'
-import { RefreshCw, CheckCircle2, Lightbulb, Pause, Play } from 'lucide-react'
+import { RefreshCw, CheckCircle2, Lightbulb, Pause, Play, Share2 } from 'lucide-react'
 import { Timer } from './components/Timer'
+
+const SHARE_TITLE = 'Sudoku — užrašai ir atsakymai'
+const SHARE_TEXT = 'Žaisk Sudoku su užrašais ir atsakymais!'
 
 const MAX_LIVES = 3
 
@@ -65,6 +68,7 @@ export default function App() {
   const [elapsedSeconds, setElapsedSeconds] = useState(0)
   const [paused, setPaused] = useState(false)
   const [highlightDigit, setHighlightDigit] = useState<Digit | null>(null)
+  const [shareMessage, setShareMessage] = useState<string | null>(null)
 
   const conflicts = useMemo(() => {
     const set = getConflicts(game.board)
@@ -264,29 +268,87 @@ export default function App() {
     setPaused((value) => !value)
   }
 
+  const showShareMessage = useCallback((message: string) => {
+    setShareMessage(message)
+    window.setTimeout(() => {
+      setShareMessage((current) => (current === message ? null : current))
+    }, 2200)
+  }, [])
+
+  const shareApp = useCallback(async () => {
+    const url = window.location.href
+    const shareData: ShareData = {
+      title: SHARE_TITLE,
+      text: SHARE_TEXT,
+      url,
+    }
+
+    try {
+      if (typeof navigator.share === 'function') {
+        const canShare =
+          typeof navigator.canShare !== 'function' || navigator.canShare(shareData)
+        if (canShare) {
+          await navigator.share(shareData)
+          showShareMessage('Pasidalinta!')
+          return
+        }
+      }
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        return
+      }
+    }
+
+    try {
+      await navigator.clipboard.writeText(url)
+      showShareMessage('Nuoroda nukopijuota!')
+    } catch {
+      showShareMessage('Nepavyko nukopijuoti nuorodos')
+    }
+  }, [showShareMessage])
+
   return (
     <div className="app-root min-h-dvh" onClick={clearSelection}>
       <WinCelebration active={won} elapsedSeconds={elapsedSeconds} />
       <LoseOverlay active={lost} />
-      <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col px-4 py-6 sm:px-6 sm:py-10">
-        <header className="mb-6 sm:mb-8 animate-fade">
-          <h1 className="font-display text-[clamp(2.4rem,8vw,3.6rem)] font-bold leading-[0.95] tracking-tight text-[var(--ink)]">
-            Sudoku
-          </h1>
-          <div className="mt-5 flex w-full items-center justify-between gap-4">
+      {shareMessage ? (
+        <div className="share-toast" role="status" aria-live="polite">
+          {shareMessage}
+        </div>
+      ) : null}
+      <div className="app-shell">
+        <header className="mb-3 sm:mb-8 animate-fade">
+          <div className="flex items-start justify-between gap-3">
+            <h1 className="font-display text-[clamp(2rem,7.5vw,3.6rem)] font-bold leading-[0.95] tracking-tight text-[var(--ink)]">
+              Sudoku
+            </h1>
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation()
+                void shareApp()
+              }}
+              className="touch-target inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[var(--surface)] px-3.5 py-2 font-ui text-sm font-medium text-[var(--ink)] ring-1 ring-[var(--ring)] transition hover:bg-white"
+              aria-label="Dalintis"
+            >
+              <Share2 size={15} />
+              Dalintis
+            </button>
+          </div>
+          <div className="mt-3 flex w-full items-center justify-between gap-3 sm:mt-5 sm:gap-4">
             <Timer seconds={elapsedSeconds} />
             <Hearts lives={lives} maxLives={MAX_LIVES} />
           </div>
         </header>
 
-        <div className="mb-5 flex flex-wrap items-center gap-2 animate-fade">
+        <div className="mb-3 flex flex-wrap items-center gap-2 animate-fade sm:mb-5">
           {(Object.keys(DIFFICULTY_LABEL) as Difficulty[]).map((level) => (
             <button
               key={level}
               type="button"
               onClick={() => startFresh(level)}
               className={[
-                'rounded-full px-3.5 py-1.5 font-ui text-sm font-medium transition',
+                'touch-target rounded-full px-3.5 py-2 font-ui text-sm font-medium transition',
                 difficulty === level
                   ? 'bg-[var(--ink)] text-[var(--paper)]'
                   : 'bg-[var(--surface)] text-[var(--ink)] ring-1 ring-[var(--ring)] hover:bg-white',
@@ -305,7 +367,7 @@ export default function App() {
               disabled={gameOver}
               aria-pressed={paused}
               className={[
-                'inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 font-ui text-sm font-medium ring-1 transition',
+                'touch-target inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 font-ui text-sm font-medium ring-1 transition',
                 paused
                   ? 'bg-[var(--accent)] text-white ring-[var(--accent)] hover:brightness-110'
                   : 'bg-[var(--surface)] text-[var(--ink)] ring-[var(--ring)] hover:bg-white',
@@ -318,7 +380,7 @@ export default function App() {
             <button
               type="button"
               onClick={() => startFresh(difficulty)}
-              className="inline-flex items-center gap-1.5 rounded-full bg-[var(--surface)] px-3.5 py-1.5 font-ui text-sm font-medium text-[var(--ink)] ring-1 ring-[var(--ring)] transition hover:bg-white"
+              className="touch-target inline-flex items-center gap-1.5 rounded-full bg-[var(--surface)] px-3.5 py-2 font-ui text-sm font-medium text-[var(--ink)] ring-1 ring-[var(--ring)] transition hover:bg-white"
             >
               <RefreshCw size={14} />
               Naujas
@@ -326,10 +388,10 @@ export default function App() {
           </div>
         </div>
 
-        <main className="relative flex flex-1 flex-col items-center gap-5">
+        <main className="relative flex flex-1 flex-col items-center gap-3 sm:gap-5">
           <div
             className={[
-              'flex w-full flex-col items-center gap-5 transition-[filter,opacity] duration-300',
+              'flex w-full flex-col items-center gap-3 transition-[filter,opacity] duration-300 sm:gap-5',
               paused ? 'pointer-events-none select-none opacity-55 blur-[18px] sm:blur-[24px]' : '',
             ].join(' ')}
             aria-hidden={paused}
@@ -350,7 +412,7 @@ export default function App() {
             />
 
             <div
-              className="flex w-full max-w-[min(92vw,34rem)] flex-col gap-3"
+              className="controls-panel flex w-full flex-col gap-2.5 sm:gap-3"
               onClick={(event) => event.stopPropagation()}
             >
               <Controls
@@ -367,7 +429,7 @@ export default function App() {
                   type="button"
                   onClick={checkProgress}
                   disabled={inputLocked}
-                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-[var(--surface)] px-4 py-3 font-ui text-sm font-semibold text-[var(--ink)] ring-1 ring-[var(--ring)] transition hover:bg-white disabled:opacity-40"
+                  className="touch-target inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-2xl bg-[var(--surface)] px-4 py-3 font-ui text-sm font-semibold text-[var(--ink)] ring-1 ring-[var(--ring)] transition hover:bg-white disabled:opacity-40"
                 >
                   <CheckCircle2 size={16} />
                   Tikrinti atsakymus
@@ -376,7 +438,7 @@ export default function App() {
                   type="button"
                   onClick={revealHint}
                   disabled={inputLocked}
-                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-[var(--surface)] px-4 py-3 font-ui text-sm font-semibold text-[var(--ink)] ring-1 ring-[var(--ring)] transition hover:bg-white disabled:opacity-40"
+                  className="touch-target inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-2xl bg-[var(--surface)] px-4 py-3 font-ui text-sm font-semibold text-[var(--ink)] ring-1 ring-[var(--ring)] transition hover:bg-white disabled:opacity-40"
                 >
                   <Lightbulb size={16} />
                   Užuomina
@@ -397,7 +459,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={togglePause}
-                className="inline-flex items-center gap-2 rounded-full bg-[var(--ink)] px-5 py-2.5 font-ui text-sm font-semibold text-[var(--paper)] transition hover:brightness-110"
+                className="touch-target inline-flex items-center gap-2 rounded-full bg-[var(--ink)] px-5 py-3 font-ui text-sm font-semibold text-[var(--paper)] transition hover:brightness-110"
               >
                 <Play size={16} />
                 Tęsti
