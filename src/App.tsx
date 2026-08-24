@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { BoardView } from './components/BoardView'
 import { Controls } from './components/Controls'
+import { Hearts } from './components/Hearts'
 import {
   boardsEqual,
   cloneBoard,
@@ -15,6 +16,8 @@ import {
   type NotesGrid,
 } from './lib/sudoku'
 import { RefreshCw, CheckCircle2, Lightbulb } from 'lucide-react'
+
+const MAX_LIVES = 3
 
 type GameState = {
   puzzle: Board
@@ -55,41 +58,92 @@ export default function App() {
   const [notesMode, setNotesMode] = useState(true)
   const [message, setMessage] = useState<string | null>(null)
   const [won, setWon] = useState(false)
+  const [lives, setLives] = useState(MAX_LIVES)
+  const [lost, setLost] = useState(false)
 
-  const conflicts = useMemo(() => getConflicts(game.board), [game.board])
+  const conflicts = useMemo(() => {
+    const set = getConflicts(game.board)
+    for (let r = 0; r < 9; r += 1) {
+      for (let c = 0; c < 9; c += 1) {
+        const value = game.board[r][c]
+        if (value === null || game.given[r][c]) continue
+        if (value !== game.solution[r][c]) set.add(`${r}-${c}`)
+      }
+    }
+    return set
+  }, [game.board, game.given, game.solution])
+  const gameOver = won || lost
 
   const startFresh = useCallback((level: Difficulty) => {
     setDifficulty(level)
     setGame(newGame(level))
     setSelected({ row: 0, col: 0 })
     setWon(false)
+    setLost(false)
+    setLives(MAX_LIVES)
     setMessage('Nauja lenta paruošta. Pradėk nuo užrašų kampe.')
   }, [])
 
   const applyDigit = useCallback(
     (digit: Digit) => {
-      if (!selected || won) return
+      if (!selected || gameOver) return
       const { row, col } = selected
       if (game.given[row][col]) {
         setMessage('Šis skaičius duotas — jo keisti negalima.')
         return
       }
 
-      setGame((prev) => {
-        const board = cloneBoard(prev.board)
-        const notes = cloneNotes(prev.notes)
-
-        if (notesMode) {
+      if (notesMode) {
+        setGame((prev) => {
+          const board = cloneBoard(prev.board)
+          const notes = cloneNotes(prev.notes)
           board[row][col] = null
           if (notes[row][col].has(digit)) notes[row][col].delete(digit)
           else notes[row][col].add(digit)
           return { ...prev, board, notes }
-        }
+        })
+        setMessage(`Užrašas ${digit} kampe.`)
+        return
+      }
 
+      const correct = game.solution[row][col] === digit
+      const alreadyCorrect = game.board[row][col] === game.solution[row][col]
+
+      if (!correct) {
+        setGame((prev) => {
+          const board = cloneBoard(prev.board)
+          const notes = cloneNotes(prev.notes)
+          board[row][col] = digit
+          notes[row][col] = new Set()
+          return { ...prev, board, notes }
+        })
+
+        setLives((prevLives) => {
+          const next = Math.max(0, prevLives - 1)
+          if (next === 0) {
+            setLost(true)
+            setMessage('Nebėra širdučių — žaidimas baigtas. Spausk „Naujas“.')
+          } else {
+            setMessage(
+              `Neteisingas atsakymas. Liko ${next} ${next === 1 ? 'širdutė' : 'širdutės'}.`,
+            )
+          }
+          return next
+        })
+        return
+      }
+
+      if (alreadyCorrect && game.board[row][col] === digit) {
+        setMessage('Šis langelis jau teisingas.')
+        return
+      }
+
+      setGame((prev) => {
+        const board = cloneBoard(prev.board)
+        const notes = cloneNotes(prev.notes)
         board[row][col] = digit
         notes[row][col] = new Set()
 
-        // Remove this digit from notes in same row/col/box
         for (let i = 0; i < 9; i += 1) {
           notes[row][i].delete(digit)
           notes[i][col].delete(digit)
@@ -104,18 +158,13 @@ export default function App() {
 
         return { ...prev, board, notes }
       })
-
-      setMessage(
-        notesMode
-          ? `Užrašas ${digit} kampe.`
-          : `Atsakymas ${digit} įrašytas.`,
-      )
+      setMessage(`Atsakymas ${digit} įrašytas.`)
     },
-    [game.given, notesMode, selected, won],
+    [game.board, game.given, game.solution, gameOver, notesMode, selected],
   )
 
   const erase = useCallback(() => {
-    if (!selected || won) return
+    if (!selected || gameOver) return
     const { row, col } = selected
     if (game.given[row][col]) {
       setMessage('Šis skaičius duotas — jo trinti negalima.')
@@ -130,14 +179,15 @@ export default function App() {
       return { ...prev, board, notes }
     })
     setMessage('Langelis išvalytas.')
-  }, [game.given, selected, won])
+  }, [game.given, gameOver, selected])
 
   useEffect(() => {
+    if (lost || lives === 0) return
     if (isComplete(game.board) && boardsEqual(game.board, game.solution)) {
       setWon(true)
       setMessage('Puiku — Sudoku išspręstas!')
     }
-  }, [game.board, game.solution])
+  }, [game.board, game.solution, lives, lost])
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -177,6 +227,10 @@ export default function App() {
   }, [applyDigit, erase, selected])
 
   const checkProgress = () => {
+    if (lost) {
+      setMessage('Žaidimas baigtas — pradėk naują.')
+      return
+    }
     let wrong = 0
     let filled = 0
     for (let r = 0; r < 9; r += 1) {
@@ -199,7 +253,7 @@ export default function App() {
   }
 
   const revealHint = () => {
-    if (!selected || won) return
+    if (!selected || gameOver) return
     const { row, col } = selected
     if (game.given[row][col] || game.board[row][col] === game.solution[row][col]) {
       setMessage('Pasirink tuščią ar klaidingą langelį užuominai.')
@@ -221,15 +275,20 @@ export default function App() {
     <div className="app-root min-h-dvh">
       <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col px-4 py-6 sm:px-6 sm:py-10">
         <header className="mb-6 sm:mb-8 animate-fade">
-          <p className="font-ui text-xs font-semibold uppercase tracking-[0.22em] text-[var(--accent)]">
-            Mokymuisi
-          </p>
-          <h1 className="font-display mt-2 text-[clamp(2.4rem,8vw,3.6rem)] font-bold leading-[0.95] tracking-tight text-[var(--ink)]">
-            Sudoku
-          </h1>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="font-ui text-xs font-semibold uppercase tracking-[0.22em] text-[var(--accent)]">
+                Mokymuisi
+              </p>
+              <h1 className="font-display mt-2 text-[clamp(2.4rem,8vw,3.6rem)] font-bold leading-[0.95] tracking-tight text-[var(--ink)]">
+                Sudoku
+              </h1>
+            </div>
+            <Hearts lives={lives} maxLives={MAX_LIVES} />
+          </div>
           <p className="mt-3 max-w-xl font-ui text-base text-[var(--muted)] sm:text-lg">
             Pirmiausia užsirašyk galimus skaičius kampe, o kai būsi tikras — įrašyk
-            atsakymą.
+            atsakymą. Klaida atima širdutę.
           </p>
         </header>
 
@@ -281,7 +340,7 @@ export default function App() {
             }}
             onDigit={applyDigit}
             onErase={erase}
-            disabled={won}
+            disabled={gameOver}
           />
 
           <div className="flex w-full max-w-[min(92vw,34rem)] flex-wrap gap-2 animate-rise-delay-2">
@@ -308,7 +367,9 @@ export default function App() {
               'min-h-12 w-full max-w-[min(92vw,34rem)] rounded-2xl px-4 py-3 font-ui text-sm transition',
               won
                 ? 'bg-[var(--success-bg)] text-[var(--success)]'
-                : 'bg-[var(--surface)] text-[var(--muted)] ring-1 ring-[var(--ring)]',
+                : lost
+                  ? 'bg-[#fde8e8] text-[var(--danger)]'
+                  : 'bg-[var(--surface)] text-[var(--muted)] ring-1 ring-[var(--ring)]',
             ].join(' ')}
             role="status"
           >

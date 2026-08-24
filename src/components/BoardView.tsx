@@ -29,47 +29,48 @@ export function BoardView({
       role="grid"
       aria-label="Sudoku lenta"
     >
-      <div className="board grid grid-cols-9 overflow-hidden rounded-[1.1rem] border-[3px] border-[#9aa3ad] bg-white shadow-[0_24px_60px_-28px_rgba(42,46,51,0.45)]">
-        {board.map((row, r) =>
-          row.map((value, c) => {
-            const key = `${r}-${c}`
-            const isSelected = selected?.row === r && selected?.col === c
-            const related =
-              !!selected &&
-              (selected.row === r ||
-                selected.col === c ||
-                (Math.floor(selected.row / 3) === Math.floor(r / 3) &&
-                  Math.floor(selected.col / 3) === Math.floor(c / 3)))
-            const sameDigit =
-              selectedValue !== null && value === selectedValue && !isSelected
+      <div className="board grid grid-cols-3 gap-[5px] overflow-hidden rounded-[1.1rem] border-[3px] border-[#9aa3ad] bg-white p-[5px] shadow-[0_24px_60px_-28px_rgba(42,46,51,0.45)]">
+        {Array.from({ length: 3 }, (_, boxRow) =>
+          Array.from({ length: 3 }, (_, boxCol) => (
+            <div
+              key={`${boxRow}-${boxCol}`}
+              className="grid grid-cols-3 gap-[2px] bg-white"
+            >
+              {Array.from({ length: 3 }, (_, ir) =>
+                Array.from({ length: 3 }, (_, ic) => {
+                  const r = boxRow * 3 + ir
+                  const c = boxCol * 3 + ic
+                  const value = board[r][c]
+                  const key = `${r}-${c}`
+                  const isSelected = selected?.row === r && selected?.col === c
+                  const related =
+                    !!selected &&
+                    (selected.row === r ||
+                      selected.col === c ||
+                      (Math.floor(selected.row / 3) === Math.floor(r / 3) &&
+                        Math.floor(selected.col / 3) === Math.floor(c / 3)))
+                  const sameDigit =
+                    selectedValue !== null &&
+                    value === selectedValue &&
+                    !isSelected
 
-            const thickRight = c === 2 || c === 5
-            const thickBottom = r === 2 || r === 5
-
-            return (
-              <div
-                key={key}
-                className={[
-                  'border-r-[2px] border-b-[2px] border-white',
-                  thickRight ? 'border-r-[5px] border-r-white' : '',
-                  thickBottom ? 'border-b-[5px] border-b-white' : '',
-                  c === 8 ? 'border-r-0' : '',
-                  r === 8 ? 'border-b-0' : '',
-                ].join(' ')}
-              >
-                <Cell
-                  value={value}
-                  notes={notes[r][c]}
-                  given={given[r][c]}
-                  selected={isSelected}
-                  related={related && !isSelected && !sameDigit}
-                  sameDigit={sameDigit}
-                  conflict={conflicts.has(key)}
-                  onSelect={() => onSelect(r, c)}
-                />
-              </div>
-            )
-          }),
+                  return (
+                    <Cell
+                      key={key}
+                      value={value}
+                      notes={notes[r][c]}
+                      given={given[r][c]}
+                      selected={isSelected}
+                      related={related && !isSelected && !sameDigit}
+                      sameDigit={sameDigit}
+                      conflict={conflicts.has(key)}
+                      onSelect={() => onSelect(r, c)}
+                    />
+                  )
+                }),
+              )}
+            </div>
+          )),
         )}
       </div>
     </div>
