@@ -32,6 +32,7 @@ export function BoardView({
       className="board-shell mx-auto w-full max-w-[min(92vw,34rem)] animate-rise"
       role="grid"
       aria-label="Sudoku lenta"
+      onClick={(event) => event.stopPropagation()}
     >
       <div className="board grid grid-cols-3 gap-[5px] overflow-hidden rounded-[1.1rem] border-[3px] border-[#9aa3ad] bg-white p-[5px] shadow-[0_24px_60px_-28px_rgba(42,46,51,0.45)]">
         {Array.from({ length: 3 }, (_, boxRow) =>

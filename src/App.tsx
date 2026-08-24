@@ -287,8 +287,13 @@ export default function App() {
     setMessage(`Užuomina: čia turi būti ${digit}.`)
   }
 
+  const clearSelection = () => {
+    setSelected(null)
+    setHighlightDigit(null)
+  }
+
   return (
-    <div className="app-root min-h-dvh">
+    <div className="app-root min-h-dvh" onClick={clearSelection}>
       <WinCelebration active={won} elapsedSeconds={elapsedSeconds} />
       <LoseOverlay active={lost} />
       <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col px-4 py-6 sm:px-6 sm:py-10">
@@ -350,39 +355,44 @@ export default function App() {
             }}
           />
 
-          <Controls
-            notesMode={notesMode}
-            onNotesModeChange={(enabled) => {
-              setNotesMode(enabled)
-              setMessage(
-                enabled
-                  ? 'Persijungei į užrašų režimą.'
-                  : 'Persijungei į atsakymo režimą.',
-              )
-            }}
-            onDigit={applyDigit}
-            onErase={erase}
-            activeDigit={highlightDigit}
-            disabled={gameOver}
-          />
+          <div
+            className="flex w-full max-w-[min(92vw,34rem)] flex-col gap-3"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <Controls
+              notesMode={notesMode}
+              onNotesModeChange={(enabled) => {
+                setNotesMode(enabled)
+                setMessage(
+                  enabled
+                    ? 'Persijungei į užrašų režimą.'
+                    : 'Persijungei į atsakymo režimą.',
+                )
+              }}
+              onDigit={applyDigit}
+              onErase={erase}
+              activeDigit={highlightDigit}
+              disabled={gameOver}
+            />
 
-          <div className="flex w-full max-w-[min(92vw,34rem)] flex-wrap gap-2 animate-rise-delay-2">
-            <button
-              type="button"
-              onClick={checkProgress}
-              className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-[var(--surface)] px-4 py-3 font-ui text-sm font-semibold text-[var(--ink)] ring-1 ring-[var(--ring)] transition hover:bg-white"
-            >
-              <CheckCircle2 size={16} />
-              Tikrinti atsakymus
-            </button>
-            <button
-              type="button"
-              onClick={revealHint}
-              className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-[var(--surface)] px-4 py-3 font-ui text-sm font-semibold text-[var(--ink)] ring-1 ring-[var(--ring)] transition hover:bg-white"
-            >
-              <Lightbulb size={16} />
-              Užuomina
-            </button>
+            <div className="flex w-full flex-wrap gap-2 animate-rise-delay-2">
+              <button
+                type="button"
+                onClick={checkProgress}
+                className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-[var(--surface)] px-4 py-3 font-ui text-sm font-semibold text-[var(--ink)] ring-1 ring-[var(--ring)] transition hover:bg-white"
+              >
+                <CheckCircle2 size={16} />
+                Tikrinti atsakymus
+              </button>
+              <button
+                type="button"
+                onClick={revealHint}
+                className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-[var(--surface)] px-4 py-3 font-ui text-sm font-semibold text-[var(--ink)] ring-1 ring-[var(--ring)] transition hover:bg-white"
+              >
+                <Lightbulb size={16} />
+                Užuomina
+              </button>
+            </div>
           </div>
 
           <div
