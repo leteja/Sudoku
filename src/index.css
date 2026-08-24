@@ -8,7 +8,8 @@
   --accent: #187a75;
   --note: #3d6b68;
   --ring: rgba(15, 61, 62, 0.12);
-  --grid-line: #c5d8d4;
+  --grid-line: #ffffff;
+  --grid-line-thick: #ffffff;
   --cell-bg: #fbfefd;
   --cell-selected: #cfece7;
   --cell-related: #e8f4f1;

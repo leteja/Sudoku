@@ -29,7 +29,7 @@ export function BoardView({
       role="grid"
       aria-label="Sudoku lenta"
     >
-      <div className="board grid grid-cols-9 overflow-hidden rounded-[1.1rem] border-[3px] border-[var(--ink)] bg-[var(--ink)] shadow-[0_24px_60px_-28px_rgba(15,61,62,0.55)]">
+      <div className="board grid grid-cols-9 overflow-hidden rounded-[1.1rem] border-[3px] border-[var(--ink)] bg-white shadow-[0_24px_60px_-28px_rgba(15,61,62,0.55)]">
         {board.map((row, r) =>
           row.map((value, c) => {
             const key = `${r}-${c}`
@@ -50,9 +50,9 @@ export function BoardView({
               <div
                 key={key}
                 className={[
-                  'border-r border-b border-[var(--grid-line)]',
-                  thickRight ? 'border-r-[2.5px] border-r-[var(--ink)]' : '',
-                  thickBottom ? 'border-b-[2.5px] border-b-[var(--ink)]' : '',
+                  'border-r-[2px] border-b-[2px] border-white',
+                  thickRight ? 'border-r-[4px] border-r-white' : '',
+                  thickBottom ? 'border-b-[4px] border-b-white' : '',
                   c === 8 ? 'border-r-0' : '',
                   r === 8 ? 'border-b-0' : '',
                 ].join(' ')}
