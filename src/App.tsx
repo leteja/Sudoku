@@ -275,21 +275,19 @@ export default function App() {
     <div className="app-root min-h-dvh">
       <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col px-4 py-6 sm:px-6 sm:py-10">
         <header className="mb-6 sm:mb-8 animate-fade">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="font-ui text-xs font-semibold uppercase tracking-[0.22em] text-[var(--accent)]">
-                Mokymuisi
-              </p>
-              <h1 className="font-display mt-2 text-[clamp(2.4rem,8vw,3.6rem)] font-bold leading-[0.95] tracking-tight text-[var(--ink)]">
-                Sudoku
-              </h1>
-            </div>
-            <Hearts lives={lives} maxLives={MAX_LIVES} />
-          </div>
+          <p className="font-ui text-xs font-semibold uppercase tracking-[0.22em] text-[var(--accent)]">
+            Mokymuisi
+          </p>
+          <h1 className="font-display mt-2 text-[clamp(2.4rem,8vw,3.6rem)] font-bold leading-[0.95] tracking-tight text-[var(--ink)]">
+            Sudoku
+          </h1>
           <p className="mt-3 max-w-xl font-ui text-base text-[var(--muted)] sm:text-lg">
             Pirmiausia užsirašyk galimus skaičius kampe, o kai būsi tikras — įrašyk
-            atsakymą. Klaida atima širdutę.
+            atsakymą. Klaida suskaldo širdutę.
           </p>
+          <div className="mt-5">
+            <Hearts lives={lives} maxLives={MAX_LIVES} />
+          </div>
         </header>
 
         <div className="mb-5 flex flex-wrap items-center gap-2 animate-fade">

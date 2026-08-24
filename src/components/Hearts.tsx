@@ -1,4 +1,4 @@
-import { Heart } from 'lucide-react'
+import { Heart, HeartCrack } from 'lucide-react'
 
 type HeartsProps = {
   lives: number
@@ -8,23 +8,30 @@ type HeartsProps = {
 export function Hearts({ lives, maxLives = 3 }: HeartsProps) {
   return (
     <div
-      className="hearts flex items-center gap-1.5"
+      className="hearts flex w-full items-center justify-center gap-4"
       aria-label={`Gyvybės: ${lives} iš ${maxLives}`}
       role="status"
     >
       {Array.from({ length: maxLives }, (_, index) => {
         const alive = index < lives
+        if (alive) {
+          return (
+            <Heart
+              key={index}
+              size={44}
+              strokeWidth={2}
+              className="fill-[#e11d48] text-[#e11d48] drop-shadow-[0_4px_10px_rgba(225,29,72,0.35)] transition-all duration-300"
+              aria-hidden
+            />
+          )
+        }
+
         return (
-          <Heart
+          <HeartCrack
             key={index}
-            size={22}
-            strokeWidth={2.2}
-            className={[
-              'transition-all duration-200',
-              alive
-                ? 'fill-[#e11d48] text-[#e11d48] scale-100'
-                : 'fill-transparent text-[#b8bec6] scale-90 opacity-45',
-            ].join(' ')}
+            size={44}
+            strokeWidth={2.1}
+            className="fill-[#1a1a1a] text-[#1a1a1a] opacity-90 transition-all duration-300"
             aria-hidden
           />
         )
