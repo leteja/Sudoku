@@ -364,7 +364,7 @@ export default function App() {
       {firstMoveGlitter ? (
         <FirstMoveGlitter
           active
-          durationMs={3000}
+          durationMs={5000}
           onDone={() => setFirstMoveGlitter(false)}
         />
       ) : null}

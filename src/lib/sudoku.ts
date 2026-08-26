@@ -263,31 +263,35 @@ function explainNakedSingle(
   col: number,
   digit: Digit,
 ): string[] {
-  const rowDigits = digitsInRow(board, row)
-  const colDigits = digitsInCol(board, col)
-  const boxDigits = digitsInBox(board, row, col)
-  const rowMissing = missingDigits(rowDigits)
-  const colMissing = missingDigits(colDigits)
-  const boxMissing = missingDigits(boxDigits)
+  const rowMissing = missingDigits(digitsInRow(board, row))
+  const colMissing = missingDigits(digitsInCol(board, col))
+  const boxMissing = missingDigits(digitsInBox(board, row, col))
 
-  const describe = (
-    place: string,
-    present: Digit[],
-    missing: Digit[],
-  ): string => {
-    if (missing.length === 1) {
-      return `${place} trūksta tik ${missing[0]}.`
-    }
-    return `${place} jau yra ${present.join(', ') || '—'}, trūksta: ${missing.join(', ')}.`
+  // Prefer the clearest cases: units with exactly one missing digit
+  const clearUnits: string[] = []
+  if (boxMissing.length === 1) clearUnits.push('3×3 kvadrate')
+  if (rowMissing.length === 1) clearUnits.push('eilutėje')
+  if (colMissing.length === 1) clearUnits.push('stulpelyje')
+
+  const lines = [`Langelis: ${row + 1} eilutė, ${col + 1} stulpelis.`]
+
+  if (clearUnits.length === 1) {
+    lines.push(
+      `Kadangi ${clearUnits[0]} yra visi skaičiai išskyrus ${digit}, todėl čia turi būti ${digit}.`,
+    )
+  } else if (clearUnits.length === 2) {
+    lines.push(
+      `Kadangi ${clearUnits[0]} ir ${clearUnits[1]} yra visi skaičiai išskyrus ${digit}, todėl čia turi būti ${digit}.`,
+    )
+  } else if (clearUnits.length === 3) {
+    lines.push(
+      `Kadangi eilutėje, stulpelyje ir 3×3 kvadrate yra visi skaičiai išskyrus ${digit}, todėl čia turi būti ${digit}.`,
+    )
+  } else {
+    lines.push(`Čia tinka tik ${digit}.`)
   }
 
-  return [
-    `Langelis: ${row + 1} eilutė, ${col + 1} stulpelis.`,
-    describe('Eilutėje', rowDigits, rowMissing),
-    describe('Stulpelyje', colDigits, colMissing),
-    describe('3×3 kvadrate', boxDigits, boxMissing),
-    `Todėl čia tinka tik ${digit}.`,
-  ]
+  return lines
 }
 
 function clarityScore(board: Board, row: number, col: number): number {

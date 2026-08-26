@@ -43,7 +43,7 @@ function createParticles(): Particle[] {
 
 export function FirstMoveGlitter({
   active,
-  durationMs = 3000,
+  durationMs = 5000,
   onDone,
 }: FirstMoveGlitterProps) {
   const [particles, setParticles] = useState<Particle[]>([])
