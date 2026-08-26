@@ -98,8 +98,11 @@ export default function App() {
   const showTeachingPanel =
     difficulty === 'beginner' && teachingMode !== 'off' && !gameOver
   const teachingTip = useMemo(
-    () => (showTeachingPanel ? findTeachingTip(game.board) : null),
-    [showTeachingPanel, game.board],
+    () =>
+      showTeachingPanel && teachingMode === 'active'
+        ? findTeachingTip(game.board)
+        : null,
+    [showTeachingPanel, teachingMode, game.board],
   )
 
   useEffect(() => {

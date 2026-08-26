@@ -102,7 +102,8 @@ function countSolutions(board: Board, limit = 2): number {
 function cluesForDifficulty(difficulty: Difficulty): number {
   switch (difficulty) {
     case 'beginner':
-      return 65
+      // Exactly 11 empty cells → 70 clues
+      return 70
     case 'easy':
       return 40
     case 'medium':
@@ -112,21 +113,13 @@ function cluesForDifficulty(difficulty: Difficulty): number {
   }
 }
 
-export function generatePuzzle(difficulty: Difficulty): {
-  puzzle: Board
-  solution: Board
-} {
-  const solution = emptyBoard()
-  solveBoard(solution)
-
+function tryCarvePuzzle(solution: Board, target: number): Board | null {
   const puzzle = cloneBoard(solution)
   const positions = shuffle(
     Array.from({ length: 81 }, (_, i) => [Math.floor(i / 9), i % 9] as const),
   )
 
   let remaining = 81
-  const target = cluesForDifficulty(difficulty)
-
   for (const [row, col] of positions) {
     if (remaining <= target) break
     const backup = puzzle[row][col]
@@ -139,6 +132,42 @@ export function generatePuzzle(difficulty: Difficulty): {
     }
   }
 
+  return remaining === target ? puzzle : null
+}
+
+export function generatePuzzle(difficulty: Difficulty): {
+  puzzle: Board
+  solution: Board
+} {
+  const target = cluesForDifficulty(difficulty)
+  const maxAttempts = difficulty === 'beginner' ? 40 : 12
+
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    const solution = emptyBoard()
+    solveBoard(solution)
+    const puzzle = tryCarvePuzzle(solution, target)
+    if (puzzle) return { puzzle, solution }
+  }
+
+  // Fallback: return best unique carve even if slightly above target
+  const solution = emptyBoard()
+  solveBoard(solution)
+  const puzzle = cloneBoard(solution)
+  const positions = shuffle(
+    Array.from({ length: 81 }, (_, i) => [Math.floor(i / 9), i % 9] as const),
+  )
+  let remaining = 81
+  for (const [row, col] of positions) {
+    if (remaining <= target) break
+    const backup = puzzle[row][col]
+    puzzle[row][col] = null
+    const test = cloneBoard(puzzle)
+    if (countSolutions(test) !== 1) {
+      puzzle[row][col] = backup
+    } else {
+      remaining -= 1
+    }
+  }
   return { puzzle, solution }
 }
 
