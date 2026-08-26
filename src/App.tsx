@@ -551,9 +551,11 @@ export default function App() {
             </div>
           ) : null}
 
-          <div className="mt-4 w-full max-w-md sm:mt-6">
-            <Rules />
-          </div>
+          {difficulty === 'beginner' ? (
+            <div className="mt-4 w-full max-w-md sm:mt-6">
+              <Rules />
+            </div>
+          ) : null}
         </main>
       </div>
     </div>
