@@ -30,7 +30,7 @@ const COLORS = [
 
 export function FirstMoveGlitter({
   active,
-  durationMs = 3500,
+  durationMs = 3000,
   onDone,
 }: FirstMoveGlitterProps) {
   const [visible, setVisible] = useState(false)

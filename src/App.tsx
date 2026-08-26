@@ -363,7 +363,7 @@ export default function App() {
       <LoseOverlay active={lost} />
       <FirstMoveGlitter
         active={firstMoveGlitter}
-        durationMs={3500}
+        durationMs={3000}
         onDone={() => setFirstMoveGlitter(false)}
       />
       {shareMessage ? (
