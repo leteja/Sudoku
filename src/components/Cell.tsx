@@ -69,7 +69,7 @@ export function Cell({
             <span
               key={digit}
               className={[
-                'font-ui text-[clamp(0.45rem,1.6vw,0.68rem)] leading-none tabular-nums',
+                'font-ui text-[clamp(0.58rem,2.1vw,0.85rem)] leading-none tabular-nums',
                 notes.has(digit) ? 'note-digit opacity-100' : 'opacity-0',
               ].join(' ')}
             >

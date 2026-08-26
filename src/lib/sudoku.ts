@@ -102,7 +102,7 @@ function countSolutions(board: Board, limit = 2): number {
 function cluesForDifficulty(difficulty: Difficulty): number {
   switch (difficulty) {
     case 'beginner':
-      return 56
+      return 61
     case 'easy':
       return 40
     case 'medium':
