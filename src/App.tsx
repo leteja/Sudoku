@@ -361,11 +361,13 @@ export default function App() {
         onPlayAgain={() => startFresh(difficulty)}
       />
       <LoseOverlay active={lost} />
-      <FirstMoveGlitter
-        active={firstMoveGlitter}
-        durationMs={3000}
-        onDone={() => setFirstMoveGlitter(false)}
-      />
+      {firstMoveGlitter ? (
+        <FirstMoveGlitter
+          active
+          durationMs={3000}
+          onDone={() => setFirstMoveGlitter(false)}
+        />
+      ) : null}
       {shareMessage ? (
         <div className="share-toast" role="status" aria-live="polite">
           {shareMessage}

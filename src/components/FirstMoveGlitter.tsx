@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type CSSProperties } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 
 type FirstMoveGlitterProps = {
   active: boolean
@@ -28,42 +28,44 @@ const COLORS = [
   '#ffe4f1',
 ]
 
+function createParticles(): Particle[] {
+  return Array.from({ length: 56 }, (_, id) => ({
+    id,
+    left: Math.random() * 100,
+    delay: Math.random() * 0.8,
+    duration: 2.2 + Math.random() * 1.6,
+    size: 6 + Math.random() * 10,
+    color: COLORS[id % COLORS.length],
+    drift: -50 + Math.random() * 100,
+    rotate: Math.random() * 720,
+  }))
+}
+
 export function FirstMoveGlitter({
   active,
   durationMs = 3000,
   onDone,
 }: FirstMoveGlitterProps) {
-  const [visible, setVisible] = useState(false)
-
-  const particles = useMemo<Particle[]>(
-    () =>
-      Array.from({ length: 56 }, (_, id) => ({
-        id,
-        left: Math.random() * 100,
-        delay: Math.random() * 0.8,
-        duration: 2.2 + Math.random() * 1.6,
-        size: 6 + Math.random() * 10,
-        color: COLORS[id % COLORS.length],
-        drift: -50 + Math.random() * 100,
-        rotate: Math.random() * 720,
-      })),
-    [active],
-  )
+  const [particles, setParticles] = useState<Particle[]>([])
+  const onDoneRef = useRef(onDone)
+  onDoneRef.current = onDone
 
   useEffect(() => {
     if (!active) {
-      setVisible(false)
+      setParticles([])
       return
     }
-    setVisible(true)
-    const id = window.setTimeout(() => {
-      setVisible(false)
-      onDone?.()
-    }, durationMs)
-    return () => window.clearTimeout(id)
-  }, [active, durationMs, onDone])
 
-  if (!visible) return null
+    setParticles(createParticles())
+    const id = window.setTimeout(() => {
+      setParticles([])
+      onDoneRef.current?.()
+    }, durationMs)
+
+    return () => window.clearTimeout(id)
+  }, [active, durationMs])
+
+  if (!active || particles.length === 0) return null
 
   return (
     <div className="first-move-glitter" aria-hidden>

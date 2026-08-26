@@ -249,6 +249,12 @@ button:disabled {
   animation-iteration-count: infinite;
 }
 
+/* First-move glitter must fall once and stop; win celebration keeps infinite. */
+.first-move-glitter .glitter-piece {
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+}
+
 .win-celebration__text {
   position: relative;
   z-index: 1;
