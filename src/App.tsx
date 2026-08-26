@@ -4,7 +4,7 @@ import { Controls } from './components/Controls'
 import { Hearts } from './components/Hearts'
 import { WinCelebration } from './components/WinCelebration'
 import { LoseOverlay } from './components/LoseOverlay'
-import { Leaderboard } from './components/Leaderboard'
+import { Rules } from './components/Rules'
 import {
   boardsEqual,
   cloneBoard,
@@ -70,7 +70,6 @@ export default function App() {
   const [paused, setPaused] = useState(false)
   const [highlightDigit, setHighlightDigit] = useState<Digit | null>(null)
   const [shareMessage, setShareMessage] = useState<string | null>(null)
-  const [leaderboardKey, setLeaderboardKey] = useState(0)
 
   const conflicts = useMemo(() => {
     const set = getConflicts(game.board)
@@ -315,7 +314,6 @@ export default function App() {
         active={won}
         elapsedSeconds={elapsedSeconds}
         difficulty={difficulty}
-        onSaved={() => setLeaderboardKey((value) => value + 1)}
         onPlayAgain={() => startFresh(difficulty)}
       />
       <LoseOverlay active={lost} />
@@ -476,7 +474,7 @@ export default function App() {
           ) : null}
 
           <div className="mt-4 w-full max-w-md sm:mt-6">
-            <Leaderboard refreshKey={leaderboardKey} difficulty={difficulty} />
+            <Rules />
           </div>
         </main>
       </div>
