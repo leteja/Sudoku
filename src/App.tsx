@@ -334,7 +334,7 @@ export default function App() {
                 event.stopPropagation()
                 void shareApp()
               }}
-              className="touch-target inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[var(--surface)] px-3.5 py-2 font-ui text-sm font-medium text-[var(--ink)] ring-1 ring-[var(--ring)] transition hover:bg-white"
+              className="touch-target inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[var(--surface)] px-3.5 py-2 font-ui text-sm font-medium text-[var(--ink)] ring-1 ring-[var(--ring)] transition hover:bg-[#fff1f6]"
               aria-label="Dalintis"
             >
               <Share2 size={15} />
@@ -357,7 +357,7 @@ export default function App() {
                 'touch-target rounded-full px-3.5 py-2 font-ui text-sm font-medium transition',
                 difficulty === level
                   ? 'bg-[var(--ink)] text-[var(--paper)]'
-                  : 'bg-[var(--surface)] text-[var(--ink)] ring-1 ring-[var(--ring)] hover:bg-white',
+                  : 'bg-[var(--surface)] text-[var(--ink)] ring-1 ring-[var(--ring)] hover:bg-[#fff1f6]',
               ].join(' ')}
             >
               {DIFFICULTY_LABEL[level]}
@@ -376,7 +376,7 @@ export default function App() {
                 'touch-target inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 font-ui text-sm font-medium ring-1 transition',
                 paused
                   ? 'bg-[var(--accent)] text-white ring-[var(--accent)] hover:brightness-110'
-                  : 'bg-[var(--surface)] text-[var(--ink)] ring-[var(--ring)] hover:bg-white',
+                  : 'bg-[var(--surface)] text-[var(--ink)] ring-[var(--ring)] hover:bg-[#fff1f6]',
                 'disabled:cursor-not-allowed disabled:opacity-40',
               ].join(' ')}
             >
@@ -386,7 +386,7 @@ export default function App() {
             <button
               type="button"
               onClick={() => startFresh(difficulty)}
-              className="touch-target inline-flex items-center gap-1.5 rounded-full bg-[var(--surface)] px-3.5 py-2 font-ui text-sm font-medium text-[var(--ink)] ring-1 ring-[var(--ring)] transition hover:bg-white"
+              className="touch-target inline-flex items-center gap-1.5 rounded-full bg-[var(--surface)] px-3.5 py-2 font-ui text-sm font-medium text-[var(--ink)] ring-1 ring-[var(--ring)] transition hover:bg-[#fff1f6]"
             >
               <RefreshCw size={14} />
               Naujas
@@ -435,7 +435,7 @@ export default function App() {
                   type="button"
                   onClick={checkProgress}
                   disabled={inputLocked}
-                  className="touch-target inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-2xl bg-[var(--surface)] px-4 py-3 font-ui text-sm font-semibold text-[var(--ink)] ring-1 ring-[var(--ring)] transition hover:bg-white disabled:opacity-40"
+                  className="touch-target inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-2xl bg-[var(--surface)] px-4 py-3 font-ui text-sm font-semibold text-[var(--ink)] ring-1 ring-[var(--ring)] transition hover:bg-[#fff1f6] disabled:opacity-40"
                 >
                   <CheckCircle2 size={16} />
                   Tikrinti atsakymus
@@ -444,7 +444,7 @@ export default function App() {
                   type="button"
                   onClick={revealHint}
                   disabled={inputLocked}
-                  className="touch-target inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-2xl bg-[var(--surface)] px-4 py-3 font-ui text-sm font-semibold text-[var(--ink)] ring-1 ring-[var(--ring)] transition hover:bg-white disabled:opacity-40"
+                  className="touch-target inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-2xl bg-[var(--surface)] px-4 py-3 font-ui text-sm font-semibold text-[var(--ink)] ring-1 ring-[var(--ring)] transition hover:bg-[#fff1f6] disabled:opacity-40"
                 >
                   <Lightbulb size={16} />
                   Užuomina

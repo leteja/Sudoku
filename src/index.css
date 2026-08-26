@@ -1,22 +1,24 @@
 @import 'tailwindcss';
 
 :root {
-  --ink: #2a2e33;
-  --paper: #e4e6e9;
-  --surface: rgba(255, 255, 255, 0.78);
-  --muted: #6b727a;
-  --accent: #187a75;
-  --note: #4a5560;
-  --ring: rgba(42, 46, 51, 0.12);
-  --grid-line: #ffffff;
-  --grid-line-thick: #ffffff;
-  --cell-bg: #d8dbdf;
-  --cell-selected: #8b949e;
-  --cell-related: #cfd3d8;
-  --cell-same: #9aa7b5;
-  --danger: #b42318;
-  --success: #0f6b45;
-  --success-bg: #d9f5e7;
+  --ink: #5b1238;
+  --paper: #fce7f0;
+  --surface: rgba(255, 246, 250, 0.88);
+  --muted: #9a4d6f;
+  --accent: #c2185b;
+  --note: #8e3a5f;
+  --ring: rgba(194, 24, 91, 0.16);
+  --grid-line: #ffe4ef;
+  --grid-line-thick: #ffe4ef;
+  --cell-bg: #f7cfe0;
+  --cell-selected: #b8326e;
+  --cell-related: #f3bdd4;
+  --cell-same: #e08ab0;
+  --danger: #9f1239;
+  --success: #9d174d;
+  --success-bg: #fce7f3;
+  --board-frame: #e8a0bc;
+  --board-gap: #ffe4ef;
   color: var(--ink);
   font-family: 'Sora', sans-serif;
   font-synthesis: none;
@@ -61,8 +63,8 @@ textarea {
 .app-root {
   background:
     radial-gradient(ellipse 70% 45% at 8% -5%, rgba(255, 255, 255, 0.55), transparent 50%),
-    radial-gradient(ellipse 60% 40% at 100% 0%, rgba(120, 128, 140, 0.12), transparent 55%),
-    linear-gradient(165deg, #eceef1 0%, #e4e6e9 45%, #dde0e4 100%);
+    radial-gradient(ellipse 60% 40% at 100% 0%, rgba(236, 72, 153, 0.14), transparent 55%),
+    linear-gradient(165deg, #fff1f6 0%, #fce7f0 45%, #f9d5e5 100%);
   position: relative;
   overflow-x: hidden;
   padding-top: env(safe-area-inset-top);
@@ -93,8 +95,8 @@ textarea {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(42, 46, 51, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(42, 46, 51, 0.03) 1px, transparent 1px);
+    linear-gradient(rgba(194, 24, 91, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(194, 24, 91, 0.05) 1px, transparent 1px);
   background-size: 48px 48px;
   mask-image: radial-gradient(circle at 50% 20%, black 20%, transparent 75%);
   opacity: 0.7;
@@ -191,7 +193,7 @@ button:disabled {
 
 .cell.is-same {
   background-color: var(--cell-same);
-  box-shadow: inset 0 0 0 2px rgba(42, 46, 51, 0.28);
+  box-shadow: inset 0 0 0 2px rgba(155, 23, 77, 0.35);
 }
 
 .cell.is-selected {
@@ -449,11 +451,11 @@ button:disabled {
   gap: 1rem;
   border-radius: 1.25rem;
   background:
-    linear-gradient(160deg, rgba(236, 238, 241, 0.72), rgba(221, 224, 228, 0.78)),
-    rgba(255, 255, 255, 0.35);
+    linear-gradient(160deg, rgba(252, 231, 243, 0.78), rgba(249, 168, 212, 0.55)),
+    rgba(255, 241, 246, 0.45);
   backdrop-filter: blur(22px) saturate(1.15);
   -webkit-backdrop-filter: blur(22px) saturate(1.15);
-  box-shadow: inset 0 0 0 1px rgba(42, 46, 51, 0.06);
+  box-shadow: inset 0 0 0 1px rgba(194, 24, 91, 0.12);
   animation: pause-fade 0.28s ease both;
 }
 

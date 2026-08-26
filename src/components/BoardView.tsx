@@ -34,12 +34,12 @@ export function BoardView({
       aria-label="Sudoku lenta"
       onClick={(event) => event.stopPropagation()}
     >
-      <div className="board grid grid-cols-3 gap-[5px] overflow-hidden rounded-[1.1rem] border-[3px] border-[#9aa3ad] bg-white p-[5px] shadow-[0_24px_60px_-28px_rgba(42,46,51,0.45)]">
+      <div className="board grid grid-cols-3 gap-[5px] overflow-hidden rounded-[1.1rem] border-[3px] border-[var(--board-frame)] bg-[var(--board-gap)] p-[5px] shadow-[0_24px_60px_-28px_rgba(194,24,91,0.35)]">
         {Array.from({ length: 3 }, (_, boxRow) =>
           Array.from({ length: 3 }, (_, boxCol) => (
             <div
               key={`${boxRow}-${boxCol}`}
-              className="grid grid-cols-3 gap-[2px] bg-white"
+              className="grid grid-cols-3 gap-[2px] bg-[var(--board-gap)]"
             >
               {Array.from({ length: 3 }, (_, ir) =>
                 Array.from({ length: 3 }, (_, ic) => {

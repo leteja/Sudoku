@@ -1,10 +1,10 @@
 const RULES = [
-  'Užpildyk visą 9×9 lentą skaičiais nuo 1 iki 9.',
-  'Kiekvienoje eilutėje, stulpelyje ir 3×3 kvadrate skaičius gali kartotis tik vieną kartą.',
-  'Pilkai pažymėti skaičiai duoti iš pradžių — jų keisti negalima.',
-  '„Užrašai“ — maži skaičiai kampe (galimi variantai). „Atsakymas“ — didelis galutinis skaičius.',
-  'Neteisingas atsakymas atima širdutę. Praradus 3 širdutes — žaidimas baigtas.',
-  'Paspaudęs skaičių mygtuką pamatysi visus tokius pat skaičius lentoje.',
+  'Lenta yra 9×9. Reikia ją užpildyti skaičiais nuo 1 iki 9.',
+  'Kiekvienoje eilutėje kiekvienas skaičius (1–9) gali būti tik vieną kartą.',
+  'Kiekviename stulpelyje kiekvienas skaičius (1–9) gali būti tik vieną kartą.',
+  'Kiekviename 3×3 kvadrate kiekvienas skaičius (1–9) gali būti tik vieną kartą.',
+  'Kai kurie skaičiai jau duoti — jie lieka vietoje ir padeda rasti kitus.',
+  'Žaidimas baigtas, kai visa lenta užpildyta teisingai, be pasikartojimų.',
 ]
 
 export function Rules() {
@@ -18,7 +18,7 @@ export function Rules() {
         id="rules-heading"
         className="font-ui text-sm font-semibold uppercase tracking-[0.14em] text-[var(--ink)]"
       >
-        Kaip žaisti
+        Sudoku taisyklės
       </h2>
       <ol className="mt-3 list-decimal space-y-2.5 pl-5 font-ui text-sm leading-relaxed text-[var(--muted)]">
         {RULES.map((rule) => (

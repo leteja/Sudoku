@@ -29,7 +29,7 @@ export function Controls({
           className={[
             'mode-btn touch-target flex min-h-12 flex-1 items-center justify-center gap-2 rounded-2xl px-3 py-3 font-ui text-sm font-semibold transition-all duration-200',
             notesMode
-              ? 'bg-[var(--accent)] text-white shadow-[0_10px_24px_-12px_rgba(24,122,117,0.8)]'
+              ? 'bg-[var(--accent)] text-white shadow-[0_10px_24px_-12px_rgba(194,24,91,0.75)]'
               : 'bg-[var(--surface)] text-[var(--ink)] ring-1 ring-[var(--ring)]',
           ].join(' ')}
           aria-pressed={notesMode}
@@ -43,7 +43,7 @@ export function Controls({
           className={[
             'mode-btn touch-target flex min-h-12 flex-1 items-center justify-center gap-2 rounded-2xl px-3 py-3 font-ui text-sm font-semibold transition-all duration-200',
             !notesMode
-              ? 'bg-[var(--ink)] text-[var(--paper)] shadow-[0_10px_24px_-12px_rgba(15,61,62,0.75)]'
+              ? 'bg-[var(--ink)] text-[var(--paper)] shadow-[0_10px_24px_-12px_rgba(91,18,56,0.7)]'
               : 'bg-[var(--surface)] text-[var(--ink)] ring-1 ring-[var(--ring)]',
           ].join(' ')}
           aria-pressed={!notesMode}
@@ -67,7 +67,7 @@ export function Controls({
                 'digit-btn touch-target aspect-square min-h-11 rounded-2xl font-display text-xl font-semibold ring-1 transition hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-40',
                 active
                   ? 'bg-[var(--ink)] text-[var(--paper)] ring-[var(--ink)]'
-                  : 'bg-[var(--surface)] text-[var(--ink)] ring-[var(--ring)] hover:bg-white',
+                  : 'bg-[var(--surface)] text-[var(--ink)] ring-[var(--ring)] hover:bg-[#fff1f6]',
               ].join(' ')}
             >
               {digit}
@@ -78,7 +78,7 @@ export function Controls({
           type="button"
           disabled={disabled}
           onClick={onErase}
-          className="digit-btn touch-target col-span-1 flex aspect-square min-h-11 items-center justify-center rounded-2xl bg-[var(--surface)] text-[var(--ink)] ring-1 ring-[var(--ring)] transition hover:-translate-y-0.5 hover:bg-white disabled:opacity-40 sm:col-span-1"
+          className="digit-btn touch-target col-span-1 flex aspect-square min-h-11 items-center justify-center rounded-2xl bg-[var(--surface)] text-[var(--ink)] ring-1 ring-[var(--ring)] transition hover:-translate-y-0.5 hover:bg-[#fff1f6] disabled:opacity-40 sm:col-span-1"
           aria-label="Ištrinti"
           title="Ištrinti"
         >

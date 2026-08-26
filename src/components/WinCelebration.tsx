@@ -154,7 +154,7 @@ export function WinCelebration({
               <button
                 type="button"
                 onClick={() => setSkipped(true)}
-                className="touch-target rounded-full bg-white/15 px-4 py-2.5 font-ui text-sm font-medium text-white ring-1 ring-white/35 transition hover:bg-white/25"
+                className="touch-target rounded-full bg-white/15 px-4 py-2.5 font-ui text-sm font-medium text-white ring-1 ring-white/35 transition hover:bg-[#fff1f6]/25"
               >
                 Praleisti
               </button>
