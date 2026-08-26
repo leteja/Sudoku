@@ -1,7 +1,5 @@
 const RULES = [
-  'Lenta yra 9×9. Reikia ją užpildyti skaičiais nuo 1 iki 9.',
-  'Kiekvienoje eilutėje kiekvienas skaičius (1–9) gali būti tik vieną kartą.',
-  'Kiekviename stulpelyje kiekvienas skaičius (1–9) gali būti tik vieną kartą.',
+  'Kiekvienoje eilutėje ir kiekviename stulpelyje kiekvienas skaičius (1–9) gali būti tik vieną kartą.',
   'Kiekviename 3×3 kvadrate kiekvienas skaičius (1–9) gali būti tik vieną kartą.',
   'Kai kurie skaičiai jau duoti — jie lieka vietoje ir padeda rasti kitus.',
   'Žaidimas baigtas, kai visa lenta užpildyta teisingai, be pasikartojimų.',
