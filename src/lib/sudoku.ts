@@ -270,13 +270,37 @@ function explainNakedSingle(
   const colMissing = missingDigits(colDigits)
   const boxMissing = missingDigits(boxDigits)
 
+  const describe = (
+    place: string,
+    present: Digit[],
+    missing: Digit[],
+  ): string => {
+    if (missing.length === 1) {
+      return `${place} trūksta tik ${missing[0]}.`
+    }
+    return `${place} jau yra ${present.join(', ') || '—'}, trūksta: ${missing.join(', ')}.`
+  }
+
   return [
     `Langelis: ${row + 1} eilutė, ${col + 1} stulpelis.`,
-    `Eilutėje jau yra ${rowDigits.join(', ') || '—'}, trūksta: ${rowMissing.join(', ')}.`,
-    `Stulpelyje jau yra ${colDigits.join(', ') || '—'}, trūksta: ${colMissing.join(', ')}.`,
-    `3×3 kvadrate jau yra ${boxDigits.join(', ') || '—'}, trūksta: ${boxMissing.join(', ')}.`,
-    `Todėl čia tinka tik ${digit} — vienintelis skaičius, kuris tinka ir eilutei, ir stulpeliui, ir kvadratui.`,
+    describe('Eilutėje', rowDigits, rowMissing),
+    describe('Stulpelyje', colDigits, colMissing),
+    describe('3×3 kvadrate', boxDigits, boxMissing),
+    `Todėl čia tinka tik ${digit}.`,
   ]
+}
+
+function clarityScore(board: Board, row: number, col: number): number {
+  const rowMissing = missingDigits(digitsInRow(board, row)).length
+  const colMissing = missingDigits(digitsInCol(board, col)).length
+  const boxMissing = missingDigits(digitsInBox(board, row, col)).length
+  // Prefer units that are one digit short — easiest to understand
+  let score = 0
+  if (rowMissing === 1) score += 10
+  if (colMissing === 1) score += 10
+  if (boxMissing === 1) score += 10
+  score += 27 - (rowMissing + colMissing + boxMissing)
+  return score
 }
 
 /** Only tips where exactly one digit is possible (naked single). */
@@ -300,24 +324,6 @@ export function findTeachingTip(board: Board): TeachingTip | null {
 
   if (tips.length === 0) return null
 
-  tips.sort((a, b) => {
-    const filledAround = (row: number, col: number) => {
-      let n = 0
-      for (let i = 0; i < 9; i += 1) {
-        if (board[row][i] !== null) n += 1
-        if (board[i][col] !== null) n += 1
-      }
-      const r0 = boxStart(row)
-      const c0 = boxStart(col)
-      for (let r = r0; r < r0 + 3; r += 1) {
-        for (let c = c0; c < c0 + 3; c += 1) {
-          if (board[r][c] !== null) n += 1
-        }
-      }
-      return n
-    }
-    return filledAround(b.row, b.col) - filledAround(a.row, a.col)
-  })
-
+  tips.sort((a, b) => clarityScore(board, b.row, b.col) - clarityScore(board, a.row, a.col))
   return tips[0]
 }

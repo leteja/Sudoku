@@ -6,6 +6,7 @@ import { WinCelebration } from './components/WinCelebration'
 import { LoseOverlay } from './components/LoseOverlay'
 import { Rules } from './components/Rules'
 import { TeachingTipCard } from './components/TeachingTipCard'
+import { FirstMoveGlitter } from './components/FirstMoveGlitter'
 import {
   boardsEqual,
   cloneBoard,
@@ -75,6 +76,8 @@ export default function App() {
   const [paused, setPaused] = useState(false)
   const [highlightDigit, setHighlightDigit] = useState<Digit | null>(null)
   const [shareMessage, setShareMessage] = useState<string | null>(null)
+  const [firstMoveGlitter, setFirstMoveGlitter] = useState(false)
+  const [celebratedFirstMove, setCelebratedFirstMove] = useState(false)
 
   const conflicts = useMemo(() => {
     const set = getConflicts(game.board)
@@ -112,6 +115,8 @@ export default function App() {
     setElapsedSeconds(0)
     setPaused(false)
     setHighlightDigit(null)
+    setFirstMoveGlitter(false)
+    setCelebratedFirstMove(false)
   }, [])
 
   useEffect(() => {
@@ -169,6 +174,12 @@ export default function App() {
         return
       }
 
+      const isFirstBeginnerAnswer =
+        difficulty === 'beginner' &&
+        !celebratedFirstMove &&
+        !game.given[row][col] &&
+        (game.puzzle[row][col] === null)
+
       setGame((prev) => {
         const board = cloneBoard(prev.board)
         const notes = cloneNotes(prev.notes)
@@ -189,8 +200,24 @@ export default function App() {
 
         return { ...prev, board, notes }
       })
+
+      if (isFirstBeginnerAnswer) {
+        setCelebratedFirstMove(true)
+        setFirstMoveGlitter(true)
+      }
     },
-    [game.board, game.given, game.solution, gameOver, notesMode, paused, selected],
+    [
+      celebratedFirstMove,
+      difficulty,
+      game.board,
+      game.given,
+      game.puzzle,
+      game.solution,
+      gameOver,
+      notesMode,
+      paused,
+      selected,
+    ],
   )
 
   const erase = useCallback(() => {
@@ -334,6 +361,11 @@ export default function App() {
         onPlayAgain={() => startFresh(difficulty)}
       />
       <LoseOverlay active={lost} />
+      <FirstMoveGlitter
+        active={firstMoveGlitter}
+        durationMs={3500}
+        onDone={() => setFirstMoveGlitter(false)}
+      />
       {shareMessage ? (
         <div className="share-toast" role="status" aria-live="polite">
           {shareMessage}

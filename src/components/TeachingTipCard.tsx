@@ -40,7 +40,7 @@ export function TeachingTipCard({ tip, onFocus }: TeachingTipCardProps) {
               onClick={onFocus}
               className="touch-target mt-2.5 inline-flex items-center rounded-full bg-[var(--accent)] px-3.5 py-1.5 font-ui text-xs font-semibold text-white transition hover:brightness-110"
             >
-              Parodyti langelį ({tip.digit})
+              Paryškinti langelį
             </button>
           ) : null}
         </div>
