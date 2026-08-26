@@ -1,7 +1,7 @@
 export type Digit = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
 export type CellValue = Digit | null
 export type Notes = Set<Digit>
-export type Difficulty = 'easy' | 'medium' | 'hard'
+export type Difficulty = 'beginner' | 'easy' | 'medium' | 'hard'
 
 export type Board = CellValue[][]
 export type NotesGrid = Notes[][]
@@ -101,6 +101,8 @@ function countSolutions(board: Board, limit = 2): number {
 
 function cluesForDifficulty(difficulty: Difficulty): number {
   switch (difficulty) {
+    case 'beginner':
+      return 50
     case 'easy':
       return 40
     case 'medium':
@@ -206,4 +208,61 @@ export function isComplete(board: Board): boolean {
     }
   }
   return getConflicts(board).size === 0
+}
+
+export function getCandidates(board: Board, row: number, col: number): Digit[] {
+  if (board[row][col] !== null) return []
+  return DIGITS.filter((digit) => isValidPlacement(board, row, col, digit))
+}
+
+export type TeachingTip = {
+  row: number
+  col: number
+  digit: Digit
+  message: string
+}
+
+export function findTeachingTip(board: Board): TeachingTip | null {
+  type Candidate = TeachingTip & { count: number }
+  const singles: Candidate[] = []
+
+  for (let r = 0; r < 9; r += 1) {
+    for (let c = 0; c < 9; c += 1) {
+      if (board[r][c] !== null) continue
+      const candidates = getCandidates(board, r, c)
+      if (candidates.length !== 1) continue
+      const digit = candidates[0]
+      singles.push({
+        row: r,
+        col: c,
+        digit,
+        count: 1,
+        message: `Pažiūrėk į langelį eilutėje ${r + 1}, stulpelyje ${c + 1}: čia tinka tik ${digit}, nes kitur toje eilutėje, stulpelyje ar 3×3 kvadrate šis skaičius jau būtų neteisingas.`,
+      })
+    }
+  }
+
+  if (singles.length > 0) return singles[0]
+
+  // Fallback: fewest candidates cell with explanation
+  let best: { row: number; col: number; candidates: Digit[] } | null = null
+  for (let r = 0; r < 9; r += 1) {
+    for (let c = 0; c < 9; c += 1) {
+      if (board[r][c] !== null) continue
+      const candidates = getCandidates(board, r, c)
+      if (candidates.length === 0) continue
+      if (!best || candidates.length < best.candidates.length) {
+        best = { row: r, col: c, candidates }
+      }
+    }
+  }
+
+  if (!best) return null
+
+  return {
+    row: best.row,
+    col: best.col,
+    digit: best.candidates[0],
+    message: `Pradėk nuo langelio eilutėje ${best.row + 1}, stulpelyje ${best.col + 1}. Ten galimi skaičiai: ${best.candidates.join(', ')}. Išbandyk „Užrašus“, tada pasirink vieną atsakymą.`,
+  }
 }

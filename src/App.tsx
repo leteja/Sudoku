@@ -5,11 +5,13 @@ import { Hearts } from './components/Hearts'
 import { WinCelebration } from './components/WinCelebration'
 import { LoseOverlay } from './components/LoseOverlay'
 import { Rules } from './components/Rules'
+import { TeachingTipCard } from './components/TeachingTipCard'
 import {
   boardsEqual,
   cloneBoard,
   cloneNotes,
   emptyNotes,
+  findTeachingTip,
   generatePuzzle,
   getConflicts,
   isComplete,
@@ -50,14 +52,17 @@ function newGame(difficulty: Difficulty): GameState {
 }
 
 const DIFFICULTY_LABEL: Record<Difficulty, string> = {
+  beginner: 'Pradinukai',
   easy: 'Lengvas',
   medium: 'Vidutinis',
   hard: 'Sunkus',
 }
 
+const DIFFICULTY_ORDER: Difficulty[] = ['beginner', 'easy', 'medium', 'hard']
+
 export default function App() {
-  const [difficulty, setDifficulty] = useState<Difficulty>('easy')
-  const [game, setGame] = useState<GameState>(() => newGame('easy'))
+  const [difficulty, setDifficulty] = useState<Difficulty>('beginner')
+  const [game, setGame] = useState<GameState>(() => newGame('beginner'))
   const [selected, setSelected] = useState<{ row: number; col: number } | null>({
     row: 0,
     col: 0,
@@ -84,6 +89,10 @@ export default function App() {
   }, [game.board, game.given, game.solution])
   const gameOver = won || lost
   const inputLocked = gameOver || paused
+  const teachingTip = useMemo(
+    () => (difficulty === 'beginner' && !gameOver ? findTeachingTip(game.board) : null),
+    [difficulty, game.board, gameOver],
+  )
 
   useEffect(() => {
     if (gameOver || paused) return
@@ -336,18 +345,49 @@ export default function App() {
             <h1 className="font-display text-[clamp(2rem,7.5vw,3.6rem)] font-bold leading-[0.95] tracking-tight text-[var(--ink)]">
               Sudoku
             </h1>
-            <button
-              type="button"
-              onClick={(event) => {
-                event.stopPropagation()
-                void shareApp()
-              }}
-              className="touch-target inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[var(--surface)] px-3.5 py-2 font-ui text-sm font-medium text-[var(--ink)] ring-1 ring-[var(--ring)] transition hover:bg-[#fff1f6]"
-              aria-label="Dalintis"
-            >
-              <Share2 size={15} />
-              Dalintis
-            </button>
+            <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation()
+                  void shareApp()
+                }}
+                className="touch-target inline-flex size-11 items-center justify-center rounded-full bg-[var(--surface)] text-[var(--ink)] ring-1 ring-[var(--ring)] transition hover:bg-[#fff1f6]"
+                aria-label="Dalintis"
+                title="Dalintis"
+              >
+                <Share2 size={16} />
+              </button>
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation()
+                  togglePause()
+                }}
+                disabled={gameOver}
+                aria-pressed={paused}
+                aria-label={paused ? 'Tęsti' : 'Pauzė'}
+                title={paused ? 'Tęsti' : 'Pauzė'}
+                className={[
+                  'touch-target inline-flex size-11 items-center justify-center rounded-full ring-1 transition',
+                  paused
+                    ? 'bg-[var(--accent)] text-white ring-[var(--accent)] hover:brightness-110'
+                    : 'bg-[var(--surface)] text-[var(--ink)] ring-[var(--ring)] hover:bg-[#fff1f6]',
+                  'disabled:cursor-not-allowed disabled:opacity-40',
+                ].join(' ')}
+              >
+                {paused ? <Play size={16} /> : <Pause size={16} />}
+              </button>
+              <button
+                type="button"
+                onClick={() => startFresh(difficulty)}
+                className="touch-target inline-flex size-11 items-center justify-center rounded-full bg-[var(--surface)] text-[var(--ink)] ring-1 ring-[var(--ring)] transition hover:bg-[#fff1f6]"
+                aria-label="Naujas"
+                title="Naujas"
+              >
+                <RefreshCw size={16} />
+              </button>
+            </div>
           </div>
           <div className="mt-3 flex w-full items-center justify-between gap-3 sm:mt-5 sm:gap-4">
             <Timer seconds={elapsedSeconds} />
@@ -356,7 +396,7 @@ export default function App() {
         </header>
 
         <div className="mb-3 flex flex-wrap items-center gap-2 animate-fade sm:mb-5">
-          {(Object.keys(DIFFICULTY_LABEL) as Difficulty[]).map((level) => (
+          {DIFFICULTY_ORDER.map((level) => (
             <button
               key={level}
               type="button"
@@ -371,35 +411,6 @@ export default function App() {
               {DIFFICULTY_LABEL[level]}
             </button>
           ))}
-          <div className="ml-auto flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              onClick={(event) => {
-                event.stopPropagation()
-                togglePause()
-              }}
-              disabled={gameOver}
-              aria-pressed={paused}
-              className={[
-                'touch-target inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 font-ui text-sm font-medium ring-1 transition',
-                paused
-                  ? 'bg-[var(--accent)] text-white ring-[var(--accent)] hover:brightness-110'
-                  : 'bg-[var(--surface)] text-[var(--ink)] ring-[var(--ring)] hover:bg-[#fff1f6]',
-                'disabled:cursor-not-allowed disabled:opacity-40',
-              ].join(' ')}
-            >
-              {paused ? <Play size={14} /> : <Pause size={14} />}
-              {paused ? 'Tęsti' : 'Pauzė'}
-            </button>
-            <button
-              type="button"
-              onClick={() => startFresh(difficulty)}
-              className="touch-target inline-flex items-center gap-1.5 rounded-full bg-[var(--surface)] px-3.5 py-2 font-ui text-sm font-medium text-[var(--ink)] ring-1 ring-[var(--ring)] transition hover:bg-[#fff1f6]"
-            >
-              <RefreshCw size={14} />
-              Naujas
-            </button>
-          </div>
         </div>
 
         <main className="relative flex flex-1 flex-col items-center gap-3 sm:gap-5">
@@ -410,6 +421,18 @@ export default function App() {
             ].join(' ')}
             aria-hidden={paused}
           >
+            {difficulty === 'beginner' ? (
+              <TeachingTipCard
+                tip={teachingTip}
+                onFocus={() => {
+                  if (!teachingTip) return
+                  setSelected({ row: teachingTip.row, col: teachingTip.col })
+                  setHighlightDigit(teachingTip.digit)
+                  setNotesMode(false)
+                }}
+              />
+            ) : null}
+
             <BoardView
               board={game.board}
               given={game.given}
