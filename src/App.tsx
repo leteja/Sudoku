@@ -105,6 +105,14 @@ export default function App() {
     setHighlightDigit(null)
   }, [])
 
+  useEffect(() => {
+    if (!won && !lost) return
+    const id = window.setTimeout(() => {
+      startFresh(difficulty)
+    }, 5000)
+    return () => window.clearTimeout(id)
+  }, [won, lost, difficulty, startFresh])
+
   const applyDigit = useCallback(
     (digit: Digit) => {
       setHighlightDigit(digit)
@@ -343,7 +351,7 @@ export default function App() {
           </div>
           <div className="mt-3 flex w-full items-center justify-between gap-3 sm:mt-5 sm:gap-4">
             <Timer seconds={elapsedSeconds} />
-            <Hearts lives={lives} maxLives={MAX_LIVES} />
+            <Hearts lives={lives} maxLives={MAX_LIVES} lost={lost} />
           </div>
         </header>
 
