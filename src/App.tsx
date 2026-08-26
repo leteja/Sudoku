@@ -61,6 +61,8 @@ const DIFFICULTY_LABEL: Record<Difficulty, string> = {
 
 const DIFFICULTY_ORDER: Difficulty[] = ['beginner', 'easy', 'medium', 'hard']
 
+type TeachingMode = 'active' | 'choice' | 'off'
+
 export default function App() {
   const [difficulty, setDifficulty] = useState<Difficulty>('beginner')
   const [game, setGame] = useState<GameState>(() => newGame('beginner'))
@@ -78,6 +80,7 @@ export default function App() {
   const [shareMessage, setShareMessage] = useState<string | null>(null)
   const [firstMoveGlitter, setFirstMoveGlitter] = useState(false)
   const [celebratedFirstMove, setCelebratedFirstMove] = useState(false)
+  const [teachingMode, setTeachingMode] = useState<TeachingMode>('active')
 
   const conflicts = useMemo(() => {
     const set = getConflicts(game.board)
@@ -92,9 +95,11 @@ export default function App() {
   }, [game.board, game.given, game.solution])
   const gameOver = won || lost
   const inputLocked = gameOver || paused
+  const showTeachingPanel =
+    difficulty === 'beginner' && teachingMode !== 'off' && !gameOver
   const teachingTip = useMemo(
-    () => (difficulty === 'beginner' && !gameOver ? findTeachingTip(game.board) : null),
-    [difficulty, game.board, gameOver],
+    () => (showTeachingPanel ? findTeachingTip(game.board) : null),
+    [showTeachingPanel, game.board],
   )
 
   useEffect(() => {
@@ -117,6 +122,7 @@ export default function App() {
     setHighlightDigit(null)
     setFirstMoveGlitter(false)
     setCelebratedFirstMove(false)
+    setTeachingMode('active')
   }, [])
 
   useEffect(() => {
@@ -204,6 +210,9 @@ export default function App() {
       if (isFirstBeginnerAnswer) {
         setCelebratedFirstMove(true)
         setFirstMoveGlitter(true)
+        if (teachingMode === 'active') {
+          setTeachingMode('choice')
+        }
       }
     },
     [
@@ -217,6 +226,7 @@ export default function App() {
       notesMode,
       paused,
       selected,
+      teachingMode,
     ],
   )
 
@@ -455,9 +465,12 @@ export default function App() {
             ].join(' ')}
             aria-hidden={paused}
           >
-            {difficulty === 'beginner' ? (
+            {showTeachingPanel ? (
               <TeachingTipCard
                 tip={teachingTip}
+                showChoice={teachingMode === 'choice'}
+                onContinueLearning={() => setTeachingMode('active')}
+                onTryAlone={() => setTeachingMode('off')}
                 onFocus={() => {
                   if (!teachingTip) return
                   setSelected({ row: teachingTip.row, col: teachingTip.col })
