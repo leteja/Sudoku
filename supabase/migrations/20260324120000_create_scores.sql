@@ -1,4 +1,6 @@
 -- Public Sudoku completion times (anonymous play — no auth required).
+-- Safe to re-run in Supabase SQL Editor.
+
 create table if not exists public.scores (
   id uuid primary key default gen_random_uuid(),
   player_name text,
@@ -14,14 +16,16 @@ create index if not exists scores_difficulty_time_idx
 
 alter table public.scores enable row level security;
 
--- Anyone can read the leaderboard.
+grant select, insert on table public.scores to anon, authenticated;
+
+drop policy if exists "Public read scores" on public.scores;
 create policy "Public read scores"
   on public.scores
   for select
   to anon, authenticated
   using (true);
 
--- Anyone can insert a new score (no updates/deletes for anon).
+drop policy if exists "Public insert scores" on public.scores;
 create policy "Public insert scores"
   on public.scores
   for insert

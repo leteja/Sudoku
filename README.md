@@ -21,13 +21,13 @@
 
 ```bash
 npm install
-cp .env.example .env   # užpildyk Supabase kintamuosius (nebūtina žaidimui)
+cp .env.example .env.local   # užpildyk Supabase kintamuosius (nebūtina žaidimui)
 npm run dev
 ```
 
 Atidaryk adresą, kurį parodys Vite (numatytasis: `http://127.0.0.1:47321`).
 
-Be `VITE_SUPABASE_*` žaidimas veikia visiškai (offline); rekordų skiltyje matysi pranešimą, kad lentelė nepasiekiama.
+Be `VITE_SUPABASE_*` žaidimas veikia visiškai; rekordų skiltyje matysi pranešimą, kad lentelė nepasiekiama.
 
 ## Stack
 
@@ -37,42 +37,59 @@ Be `VITE_SUPABASE_*` žaidimas veikia visiškai (offline); rekordų skiltyje mat
 
 ---
 
-## Vercel — viešas URL
+## 1) Supabase — vienas SQL žingsnis (privaloma rekordams)
 
-1. Įkelk repo į GitHub (arba naudok esamą).
-2. [Vercel](https://vercel.com) → **Add New Project** → prijunk repo.
-3. Framework: **Vite**. Build: `npm run build`, Output: `dist` (žr. `vercel.json`).
-4. **Environment Variables** (Production):
-   - `VITE_SUPABASE_URL`
-   - `VITE_SUPABASE_ANON_KEY`
-5. Deploy → gausi viešą URL (pvz. `https://….vercel.app`).
+1. Atidaryk [Supabase Dashboard](https://supabase.com/dashboard) → savo projektą.
+2. Kairėje: **SQL Editor** → **New query**.
+3. Įklijuok visą failą `supabase/migrations/20260324120000_create_scores.sql` → **Run**.
 
-Arba CLI:
-
-```bash
-npx vercel login
-npx vercel --prod
-```
-
-CLI paklaus env kintamųjų arba juos gali nustatyti dashboard’e prieš `--prod`.
-
----
-
-## Supabase — rekordai
-
-1. Sukurk projektą [supabase.com](https://supabase.com).
-2. **SQL Editor** → paleisk failą  
-   `supabase/migrations/20260324120000_create_scores.sql`  
-   (lenta `scores`, RLS: viešas SELECT + INSERT, be UPDATE/DELETE anonimui).
-3. **Project Settings → API**: nukopijuok **Project URL** ir **anon public** raktą.
-4. Įrašyk juos į `.env` lokaliai ir į Vercel Environment Variables.
-5. Po deploy bet kas gali atidaryti URL, žaisti be prisijungimo ir (pasirinktinai) įrašyti laiką į **Rekordai**.
+Po to rekordai veikia lokaliai ir po deploy.
 
 ### Saugumas
 
-- Commit’ink tik `.env.example`, niekada tikrų raktų.
-- Naudok **anon** raktą fronte (ne `service_role`).
-- RLS leidžia tik skaityti ir įterpti; atnaujinimų/trynimų anonimui nėra.
+- Commit’ink tik `.env.example`, niekada tikrų raktų (`.env.local` yra gitignore).
+- Fronte naudok **anon / publishable** raktą (`VITE_SUPABASE_ANON_KEY`), ne `service_role`.
+- RLS leidžia tik SELECT + INSERT; UPDATE/DELETE anonimui nėra.
+
+---
+
+## 2) Viešas URL be GitHub (rekomenduojama, jei Vercel Import nepavyksta)
+
+Kompiuteryje projekto aplanke:
+
+```bash
+npm install
+npm i -g vercel
+vercel login
+vercel --prod
+```
+
+Kai paklaus env:
+
+- `VITE_SUPABASE_URL` = tavo Project URL  
+- `VITE_SUPABASE_ANON_KEY` = anon / publishable raktas  
+
+Arba po deploy: Vercel Dashboard → Project → **Settings → Environment Variables** → pridėk abu → **Redeploy**.
+
+Gausi viešą URL (pvz. `https://….vercel.app`). Keli žmonės gali žaisti vienu metu.
+
+### Alternatyva: drag-and-drop `dist`
+
+```bash
+npm run build
+```
+
+Tada [vercel.com/new](https://vercel.com/new) → įkelk `dist` aplanką (arba naudok Netlify Drop / panašų static host). Env kintamieji Vite build metu turi būti jau nustatyti (`.env.local` prieš `npm run build`), nes jie įdedami į JS.
+
+---
+
+## 3) Jei Vercel „Import Git Repository“ nepavyksta
+
+- Patikrink, ar Vercel paskyra turi prieigą prie GitHub repo (GitHub → Settings → Applications → Vercel → Repository access).
+- Import’ui rinkis tą pačią GitHub paskyrą / organizaciją, kurioje yra repo.
+- Jei vis tiek stringa — naudok CLI aukščiau (`vercel login` → `vercel --prod`), GitHub Import nereikia.
+
+---
 
 ## Build
 
