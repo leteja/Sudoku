@@ -118,7 +118,7 @@ export function WinCelebration({
         ))}
       </div>
       <div className="win-celebration__copy" onClick={(event) => event.stopPropagation()}>
-        <p className="win-celebration__text font-display">Sveikinu</p>
+        <p className="win-celebration__text font-display">Laimėjai</p>
         <p className="win-celebration__time font-ui">
           Visas laikas: {formatTime(elapsedSeconds)}
         </p>

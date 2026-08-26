@@ -52,7 +52,7 @@ export function LoseOverlay({ active }: LoseOverlayProps) {
         ))}
         <div className="blood-veil" />
       </div>
-      <p className="lose-overlay__text font-display">Pralaimejai</p>
+      <p className="lose-overlay__text font-display">Pralaimėjai</p>
     </div>
   )
 }

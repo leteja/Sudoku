@@ -22,18 +22,25 @@ export function TeachingTipCard({ tip, onFocus }: TeachingTipCardProps) {
           <h2 className="font-ui text-sm font-semibold text-[var(--ink)]">
             Mokomės žaisti
           </h2>
-          <p className="mt-1.5 font-ui text-sm leading-relaxed text-[var(--muted)]">
-            {tip
-              ? tip.message
-              : 'Pasirink tuščią langelį ir bandyk dėti skaičių taip, kad eilutėje, stulpelyje ir 3×3 kvadrate jis nesikartotų.'}
-          </p>
+          {tip ? (
+            <ul className="mt-1.5 list-disc space-y-1 pl-4 font-ui text-sm leading-relaxed text-[var(--muted)]">
+              {tip.lines.map((line) => (
+                <li key={line}>{line}</li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-1.5 font-ui text-sm leading-relaxed text-[var(--muted)]">
+              Ieškok tuščio langelio, kuriame tinka tik vienas skaičius: pažiūrėk,
+              ko trūksta eilutėje, stulpelyje ir 3×3 kvadrate.
+            </p>
+          )}
           {tip ? (
             <button
               type="button"
               onClick={onFocus}
               className="touch-target mt-2.5 inline-flex items-center rounded-full bg-[var(--accent)] px-3.5 py-1.5 font-ui text-xs font-semibold text-white transition hover:brightness-110"
             >
-              Parodyti langelį
+              Parodyti langelį ({tip.digit})
             </button>
           ) : null}
         </div>

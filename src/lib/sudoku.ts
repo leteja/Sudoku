@@ -102,7 +102,7 @@ function countSolutions(board: Board, limit = 2): number {
 function cluesForDifficulty(difficulty: Difficulty): number {
   switch (difficulty) {
     case 'beginner':
-      return 50
+      return 56
     case 'easy':
       return 40
     case 'medium':
@@ -219,12 +219,69 @@ export type TeachingTip = {
   row: number
   col: number
   digit: Digit
-  message: string
+  lines: string[]
 }
 
+function digitsInRow(board: Board, row: number): Digit[] {
+  const values: Digit[] = []
+  for (let c = 0; c < 9; c += 1) {
+    const v = board[row][c]
+    if (v !== null) values.push(v)
+  }
+  return values.sort((a, b) => a - b)
+}
+
+function digitsInCol(board: Board, col: number): Digit[] {
+  const values: Digit[] = []
+  for (let r = 0; r < 9; r += 1) {
+    const v = board[r][col]
+    if (v !== null) values.push(v)
+  }
+  return values.sort((a, b) => a - b)
+}
+
+function digitsInBox(board: Board, row: number, col: number): Digit[] {
+  const values: Digit[] = []
+  const r0 = boxStart(row)
+  const c0 = boxStart(col)
+  for (let r = r0; r < r0 + 3; r += 1) {
+    for (let c = c0; c < c0 + 3; c += 1) {
+      const v = board[r][c]
+      if (v !== null) values.push(v)
+    }
+  }
+  return values.sort((a, b) => a - b)
+}
+
+function missingDigits(present: Digit[]): Digit[] {
+  return DIGITS.filter((d) => !present.includes(d))
+}
+
+function explainNakedSingle(
+  board: Board,
+  row: number,
+  col: number,
+  digit: Digit,
+): string[] {
+  const rowDigits = digitsInRow(board, row)
+  const colDigits = digitsInCol(board, col)
+  const boxDigits = digitsInBox(board, row, col)
+  const rowMissing = missingDigits(rowDigits)
+  const colMissing = missingDigits(colDigits)
+  const boxMissing = missingDigits(boxDigits)
+
+  return [
+    `Langelis: ${row + 1} eilutė, ${col + 1} stulpelis.`,
+    `Eilutėje jau yra ${rowDigits.join(', ') || '—'}, trūksta: ${rowMissing.join(', ')}.`,
+    `Stulpelyje jau yra ${colDigits.join(', ') || '—'}, trūksta: ${colMissing.join(', ')}.`,
+    `3×3 kvadrate jau yra ${boxDigits.join(', ') || '—'}, trūksta: ${boxMissing.join(', ')}.`,
+    `Todėl čia tinka tik ${digit} — vienintelis skaičius, kuris tinka ir eilutei, ir stulpeliui, ir kvadratui.`,
+  ]
+}
+
+/** Only tips where exactly one digit is possible (naked single). */
 export function findTeachingTip(board: Board): TeachingTip | null {
-  type Candidate = TeachingTip & { count: number }
-  const singles: Candidate[] = []
+  const tips: TeachingTip[] = []
 
   for (let r = 0; r < 9; r += 1) {
     for (let c = 0; c < 9; c += 1) {
@@ -232,37 +289,35 @@ export function findTeachingTip(board: Board): TeachingTip | null {
       const candidates = getCandidates(board, r, c)
       if (candidates.length !== 1) continue
       const digit = candidates[0]
-      singles.push({
+      tips.push({
         row: r,
         col: c,
         digit,
-        count: 1,
-        message: `Pažiūrėk į langelį eilutėje ${r + 1}, stulpelyje ${c + 1}: čia tinka tik ${digit}, nes kitur toje eilutėje, stulpelyje ar 3×3 kvadrate šis skaičius jau būtų neteisingas.`,
+        lines: explainNakedSingle(board, r, c, digit),
       })
     }
   }
 
-  if (singles.length > 0) return singles[0]
+  if (tips.length === 0) return null
 
-  // Fallback: fewest candidates cell with explanation
-  let best: { row: number; col: number; candidates: Digit[] } | null = null
-  for (let r = 0; r < 9; r += 1) {
-    for (let c = 0; c < 9; c += 1) {
-      if (board[r][c] !== null) continue
-      const candidates = getCandidates(board, r, c)
-      if (candidates.length === 0) continue
-      if (!best || candidates.length < best.candidates.length) {
-        best = { row: r, col: c, candidates }
+  tips.sort((a, b) => {
+    const filledAround = (row: number, col: number) => {
+      let n = 0
+      for (let i = 0; i < 9; i += 1) {
+        if (board[row][i] !== null) n += 1
+        if (board[i][col] !== null) n += 1
       }
+      const r0 = boxStart(row)
+      const c0 = boxStart(col)
+      for (let r = r0; r < r0 + 3; r += 1) {
+        for (let c = c0; c < c0 + 3; c += 1) {
+          if (board[r][c] !== null) n += 1
+        }
+      }
+      return n
     }
-  }
+    return filledAround(b.row, b.col) - filledAround(a.row, a.col)
+  })
 
-  if (!best) return null
-
-  return {
-    row: best.row,
-    col: best.col,
-    digit: best.candidates[0],
-    message: `Pradėk nuo langelio eilutėje ${best.row + 1}, stulpelyje ${best.col + 1}. Ten galimi skaičiai: ${best.candidates.join(', ')}. Išbandyk „Užrašus“, tada pasirink vieną atsakymą.`,
-  }
+  return tips[0]
 }
