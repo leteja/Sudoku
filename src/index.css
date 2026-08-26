@@ -133,7 +133,7 @@ button:disabled {
   font-size: 0.875rem;
   font-weight: 600;
   padding: 0.65rem 1.1rem;
-  box-shadow: 0 12px 28px -14px rgba(42, 46, 51, 0.55);
+  box-shadow: 0 12px 28px -14px rgba(194, 24, 91, 0.45);
   animation: fade-in 0.25s ease both;
   pointer-events: none;
   max-width: calc(100vw - 2rem);
